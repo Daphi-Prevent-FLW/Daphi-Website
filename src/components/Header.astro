@@ -1,0 +1,262 @@
+---
+/**
+ * Site header: language-specific logo at the inline start (left in EN, right in HE: no
+ * direction-specific CSS needed), primary navigation, language switcher, mobile menu.
+ *
+ * No-JS behaviour: the nav simply stays visible (wrapping below the logo on small screens).
+ * With JS: an inline script adds `js` to <html>, which collapses the nav on small screens
+ * behind a toggle button (aria-expanded / aria-controls; Escape closes and returns focus).
+ */
+import BrandLogo from './BrandLogo.astro';
+import LanguageSwitcher from './LanguageSwitcher.astro';
+import { getDictionary, type Lang } from '../i18n';
+import { routePath, navRoutes, type RouteId } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  routeId: RouteId;
+}
+const { lang, routeId } = Astro.props;
+const dict = getDictionary(lang);
+const labels = {
+  open: dict.ui.openMenu,
+  close: dict.ui.closeMenu,
+};
+---
+
+<header class="site-header" data-site-header>
+  <div class="container header-inner">
+    <a
+      class="brand"
+      href={routePath(lang, 'home')}
+      aria-label={dict.ui.homeLinkLabel}
+      aria-current={routeId === 'home' ? 'page' : undefined}
+    >
+      <BrandLogo lang={lang} />
+    </a>
+
+    <button
+      class="menu-toggle"
+      type="button"
+      aria-expanded="false"
+      aria-controls="site-nav"
+      aria-label={labels.open}
+      data-label-open={labels.open}
+      data-label-close={labels.close}
+    >
+      <span class="menu-toggle__icon" aria-hidden="true"><span></span></span>
+      <span class="menu-toggle__text">{dict.ui.menu}</span>
+    </button>
+
+    <nav class="site-nav" id="site-nav" aria-label={dict.ui.primaryNavLabel}>
+      <ul>
+        {
+          navRoutes.map((route) => {
+            const current = route.id === routeId;
+            return (
+              <li>
+                <a
+                  href={routePath(lang, route.id)}
+                  aria-current={current ? 'page' : undefined}
+                  class:list={{ current }}
+                >
+                  {dict.nav[route.id]}
+                </a>
+              </li>
+            );
+          })
+        }
+      </ul>
+    </nav>
+
+    <LanguageSwitcher lang={lang} routeId={routeId} />
+  </div>
+</header>
+
+<script is:inline>
+  (function () {
+    var root = document.documentElement;
+    root.classList.add('js');
+
+    var header = document.querySelector('[data-site-header]');
+    if (!header) return;
+    var toggle = header.querySelector('.menu-toggle');
+    var nav = header.querySelector('.site-nav');
+    var mq = window.matchMedia('(min-width: 70em)');
+
+    function setOpen(open, returnFocus) {
+      toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+      toggle.setAttribute('aria-label', toggle.getAttribute(open ? 'data-label-close' : 'data-label-open'));
+      header.classList.toggle('menu-open', open);
+      if (!open && returnFocus) toggle.focus();
+    }
+
+    toggle.addEventListener('click', function () {
+      setOpen(toggle.getAttribute('aria-expanded') !== 'true', false);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+        // Return focus to the toggle only if focus is inside the menu; avoid stealing it otherwise.
+        setOpen(false, header.contains(document.activeElement));
+      }
+    });
+
+    // Close after choosing a link (same-page fragments do not reload the page).
+    nav.addEventListener('click', function (e) {
+      if (e.target.closest && e.target.closest('a')) setOpen(false, false);
+    });
+
+    // Close when focus leaves the header entirely (tabbing past the menu) or on outside tap.
+    document.addEventListener('click', function (e) {
+      if (!header.contains(e.target)) setOpen(false, false);
+    });
+    header.addEventListener('focusout', function (e) {
+      if (e.relatedTarget && !header.contains(e.relatedTarget)) setOpen(false, false);
+    });
+
+    // Reset when the viewport grows to the desktop layout.
+    var onChange = function () { if (mq.matches) setOpen(false, false); };
+    if (mq.addEventListener) mq.addEventListener('change', onChange);
+
+    // Language switcher: keep the current #fragment when switching language.
+    function syncHash() {
+      var links = document.querySelectorAll('a[data-lang-switch]');
+      for (var i = 0; i < links.length; i++) {
+        var base = links[i].getAttribute('href').split('#')[0];
+        links[i].setAttribute('href', base + location.hash);
+      }
+    }
+    syncHash();
+    window.addEventListener('hashchange', syncHash);
+  })();
+</script>
+
+<style>
+  .site-header {
+    position: sticky;
+    inset-block-start: 0;
+    z-index: 50;
+    background: var(--color-bg);
+    border-block-end: var(--border-width) solid var(--color-border);
+  }
+
+  /* Mobile-first: logo, switcher and toggle on the first row; nav on its own row. */
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    column-gap: var(--space-xs);
+    row-gap: var(--space-3xs);
+    padding-block: var(--space-2xs);
+  }
+
+  .brand {
+    order: 1;
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--touch-target);
+    margin-inline-end: auto;
+    text-decoration: none;
+  }
+
+  .menu-toggle {
+    order: 2;
+    display: none;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-block-size: var(--touch-target);
+    padding-inline: var(--space-xs);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-s);
+    background: transparent;
+    color: var(--color-text);
+    font: inherit;
+    font-size: var(--step--1);
+    cursor: pointer;
+  }
+  .menu-toggle:hover {
+    background: var(--color-surface);
+  }
+  .menu-toggle__icon {
+    position: relative;
+    inline-size: 1.25rem;
+    block-size: 1.25rem;
+  }
+  .menu-toggle__icon::before,
+  .menu-toggle__icon::after,
+  .menu-toggle__icon > span {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    block-size: 2px;
+    background: currentColor;
+    border-radius: 1px;
+    transition: transform var(--transition), opacity var(--transition);
+  }
+  .menu-toggle__icon::before { inset-block-start: 3px; }
+  .menu-toggle__icon > span { inset-block-start: calc(50% - 1px); }
+  .menu-toggle__icon::after { inset-block-end: 3px; }
+  .menu-open .menu-toggle__icon::before { transform: translateY(6px) rotate(45deg); }
+  .menu-open .menu-toggle__icon > span { opacity: 0; }
+  .menu-open .menu-toggle__icon::after { transform: translateY(-6px) rotate(-45deg); }
+
+  .header-inner > :global(.lang-switcher) {
+    order: 3;
+  }
+  .site-nav {
+    flex-basis: 100%;
+    order: 4;
+  }
+  .site-nav ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .site-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--touch-target);
+    padding-inline: var(--space-2xs);
+    text-decoration: none;
+    font-size: var(--step--1);
+    border-block-end: 4px solid transparent;
+  }
+  .site-nav a:hover {
+    border-block-end-color: var(--color-accent);
+  }
+  /* Current page: thick underline + bold (not colour alone) in addition to aria-current. */
+  .site-nav a.current {
+    font-weight: 700;
+    border-block-end-color: var(--color-text);
+  }
+
+  /* With JS on small screens the nav is a collapsible panel. */
+  :global(.js) .menu-toggle { display: inline-flex; }
+  @media (max-width: 69.999em) {
+    :global(.js) .site-nav { display: none; padding-block-end: var(--space-xs); }
+    :global(.js) .menu-open .site-nav { display: block; }
+    :global(.js) .site-nav ul { flex-direction: column; gap: 0; }
+    :global(.js) .site-nav a {
+      inline-size: 100%;
+      padding-inline: var(--space-xs);
+      border-block-end: 0;
+      border-inline-start: 4px solid transparent;
+    }
+    :global(.js) .site-nav a:hover { border-inline-start-color: var(--color-accent); }
+    :global(.js) .site-nav a.current { border-inline-start-color: var(--color-text); }
+  }
+
+  /* Desktop: single row. Order: logo, nav (fills), language switcher. */
+  @media (min-width: 70em) {
+    .header-inner { flex-wrap: nowrap; column-gap: var(--space-m); }
+    .brand { margin-inline-end: 0; }
+    .site-nav { flex: 1 1 auto; flex-basis: auto; order: 2; }
+    .site-nav ul { justify-content: flex-end; }
+    :global(.js) .menu-toggle { display: none; }
+    .header-inner > :global(.lang-switcher) { order: 3; }
+  }
+</style>

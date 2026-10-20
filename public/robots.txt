@@ -1,0 +1,6 @@
+User-agent: *
+Allow: /
+
+# Add a Sitemap line here once the production domain is confirmed and set in
+# src/config/site.config.mjs (siteUrl). Example:
+# Sitemap: https://YOUR-DOMAIN/sitemap-index.xml

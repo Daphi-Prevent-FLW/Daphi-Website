@@ -1,0 +1,16 @@
+---
+// Route: /{lang}/  (en + he). Stage 1 stub: replaced by real content in a later stage.
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import StubPage from '../../components/StubPage.astro';
+import { langStaticPaths, type Lang } from '../../i18n';
+
+export function getStaticPaths() {
+  return langStaticPaths();
+}
+
+const lang = Astro.params.lang as Lang;
+---
+
+<BaseLayout lang={lang} routeId="home">
+  <StubPage lang={lang} routeId="home" />
+</BaseLayout>
