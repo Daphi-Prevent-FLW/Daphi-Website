@@ -1,0 +1,61 @@
+---
+/**
+ * Language-specific logo with automatic fallback.
+ * - If the configured logo file exists in /public at build time: <img> (never mirrored in RTL).
+ * - Otherwise: a plain text wordmark, clearly styled as a fallback. NOT an official Daphi asset.
+ */
+import { siteConfig } from '../config/site.config.mjs';
+import { resolveBrandAsset } from '../lib/brand';
+import { getDictionary, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const dict = getDictionary(lang);
+const logo = resolveBrandAsset(siteConfig.assets.logo[lang]);
+const showMarker = siteConfig.showPlaceholderMarkers;
+---
+
+{
+  logo ? (
+    <img
+      class="logo"
+      src={logo.src}
+      alt={dict.meta.siteName}
+      width={logo.width}
+      height={logo.height}
+      decoding="async"
+    />
+  ) : (
+    <span
+      class:list={['wordmark', { 'wordmark--marked': showMarker }]}
+      data-fallback="logo"
+      title={showMarker ? dict.ui.fallbackLogoTitle : undefined}
+    >
+      {dict.meta.fallbackWordmark}
+    </span>
+  )
+}
+
+<style>
+  .logo {
+    display: block;
+    block-size: 2.75rem;
+    inline-size: auto;
+    max-inline-size: 12rem;
+  }
+  .wordmark {
+    font-family: var(--font-heading);
+    font-size: var(--step-3);
+    line-height: 1;
+    color: var(--color-text);
+    letter-spacing: 0.01em;
+  }
+  /* Fallback is visibly marked without relying on colour: dashed underline. */
+  .wordmark--marked {
+    text-decoration: underline dashed var(--color-accent);
+    text-decoration-thickness: 2px;
+    text-underline-offset: 0.18em;
+  }
+</style>

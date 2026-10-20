@@ -1,0 +1,32 @@
+---
+/**
+ * Visible "placeholder" badge. Renders nothing when showPlaceholderMarkers is false in site.config.
+ * Not colour-only: dashed border + text label. (Extended in Stage 2 for statistics/references.)
+ */
+import { siteConfig } from '../config/site.config.mjs';
+import { getDictionary, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const dict = getDictionary(lang);
+---
+
+{siteConfig.showPlaceholderMarkers && <span class="placeholder-badge" data-placeholder>{dict.ui.placeholderBadge}</span>}
+
+<style>
+  .placeholder-badge {
+    display: inline-block;
+    padding: 0 var(--space-2xs);
+    border: 2px dashed var(--color-accent);
+    border-radius: var(--radius-s);
+    color: var(--color-accent-text);
+    background: var(--color-surface);
+    font-size: var(--step--1);
+    font-weight: 700;
+    line-height: 1.6;
+    vertical-align: baseline;
+    white-space: nowrap;
+  }
+</style>

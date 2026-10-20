@@ -1,0 +1,42 @@
+---
+/**
+ * Clickable contact address using the email icon when the icon file exists.
+ * Icon sits at the inline start of the address: left in LTR, right in RTL (flex + dir does this
+ * with no direction-specific CSS). If the icon file is missing, a text-only link is rendered.
+ * The address is wrapped in <bdi dir="ltr"> so it stays intact inside Hebrew text.
+ */
+import { siteConfig } from '../config/site.config.mjs';
+import { resolveBrandAsset } from '../lib/brand';
+import { buildMailto } from '../lib/mailto';
+import { getDictionary, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const dict = getDictionary(lang);
+const icon = resolveBrandAsset(siteConfig.assets.emailIcon);
+const href = buildMailto();
+---
+
+<a class="email-link" href={href} aria-label={`${dict.ui.emailLinkLabel}: ${siteConfig.email}`}>
+  {icon && <img class="email-link__icon" src={icon.src} alt="" width={icon.width} height={icon.height} aria-hidden="true" />}
+  <bdi dir="ltr" class="email-link__address">{siteConfig.email}</bdi>
+</a>
+
+<style>
+  .email-link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2xs);
+    min-block-size: var(--touch-target);
+    font-weight: 700;
+  }
+  .email-link__icon {
+    display: block;
+    inline-size: 1.5rem;
+    block-size: 1.5rem;
+    flex: none;
+    /* Official icon is intentionally not mirrored. */
+  }
+</style>

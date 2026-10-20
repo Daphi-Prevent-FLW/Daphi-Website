@@ -1,0 +1,40 @@
+---
+/**
+ * Base layout for every localized page: <html lang dir>, SEO head, skip link, header, <main>, footer.
+ * lang/dir are derived from the route's language (src/config/routes.mjs: DIRS).
+ */
+import '../styles/global.css';
+import SeoHead from '../components/SeoHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import { getDictionary, getDir, type Lang } from '../i18n';
+import type { RouteId } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  routeId: RouteId;
+  /** Overrides the localized <title> from the dictionary (rarely needed). */
+  title?: string;
+  description?: string;
+}
+const { lang, routeId } = Astro.props;
+const dict = getDictionary(lang);
+const page = dict.pages[routeId];
+const title = Astro.props.title ?? page.metaTitle;
+const description = Astro.props.description ?? page.description;
+---
+
+<!doctype html>
+<html lang={lang} dir={getDir(lang)}>
+  <head>
+    <SeoHead lang={lang} routeId={routeId} title={title} description={description} />
+  </head>
+  <body data-route={routeId}>
+    <a class="skip-link" href="#main">{dict.ui.skipToContent}</a>
+    <Header lang={lang} routeId={routeId} />
+    <main id="main" tabindex="-1">
+      <slot />
+    </main>
+    <Footer lang={lang} routeId={routeId} />
+  </body>
+</html>

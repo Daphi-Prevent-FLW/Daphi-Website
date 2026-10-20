@@ -1,22 +1,22 @@
-# Dependencies
+# build output
+dist/
+.astro/
+.wrangler/
+
+# dependencies
 node_modules/
 
-# Build output
-dist/
-
-# Astro generated files
-.astro/
-
-# Environment files
+# logs and env
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 .env
 .env.*
 !.env.example
 
-# Logs
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-
-# macOS
+# OS / editor
 .DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/

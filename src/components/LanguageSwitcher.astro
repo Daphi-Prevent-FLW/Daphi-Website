@@ -1,0 +1,83 @@
+---
+/**
+ * Visible language switcher. Each link goes to the EQUIVALENT page in the other language
+ * (every page exists in both languages, and slugs are identical, see src/config/routes.mjs).
+ * If a page ever lacks a translation, pass `fallbackToHome` for it in routes and this falls back to home.
+ * The current URL fragment is appended client-side (progressive enhancement, data-lang-switch).
+ */
+import { LANGS, getDictionary, type Lang } from '../i18n';
+import { routePath, type RouteId } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  routeId: RouteId;
+}
+const { lang, routeId } = Astro.props;
+const dict = getDictionary(lang);
+
+// Names are shown in their own language; lang= on each link is set accordingly.
+const items = LANGS.map((code) => ({
+  code,
+  name: getDictionary(code).lang.nativeName,
+  href: routePath(code, routeId),
+  current: code === lang,
+  label: dict.ui.switchToLanguage[code],
+}));
+---
+
+<nav class="lang-switcher" aria-label={dict.ui.languageSwitcherLabel}>
+  <ul>
+    {
+      items.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            lang={item.code}
+            hreflang={item.code}
+            data-lang-switch
+            aria-label={item.current ? undefined : item.label}
+            aria-current={item.current ? 'true' : undefined}
+            class:list={{ current: item.current }}
+          >
+            {item.name}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</nav>
+
+<style>
+  ul {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3xs);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-inline-size: var(--touch-target);
+    min-block-size: var(--touch-target);
+    padding-inline: var(--space-xs);
+    border: var(--border-width) solid transparent;
+    border-radius: var(--radius-s);
+    text-decoration: none;
+    font-size: var(--step--1);
+  }
+  a:hover {
+    border-color: var(--color-border);
+  }
+  /* Current language: filled pill + not colour alone (also marked by aria-current and bold). */
+  a.current {
+    background: var(--color-strong);
+    color: var(--color-on-strong);
+    font-weight: 700;
+  }
+  a.current:focus-visible {
+    outline-color: var(--color-text);
+  }
+</style>

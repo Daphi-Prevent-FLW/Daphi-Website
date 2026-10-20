@@ -1,0 +1,1 @@
+For me (not for AI models): Change the placeholder favicon into a language-neutral favicon of Daphi (use the top element / the letter Pe)

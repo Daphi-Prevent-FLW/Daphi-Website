@@ -1,8 +1,12 @@
 {
-  "$schema": "./node_modules/wrangler/config-schema.json",
+  // Cloudflare static-assets deployment for the built Astro site (output: ./dist).
+  // Account-specific steps (login, project creation, custom domain) are described in README.md.
+  // When merging into the existing Daphi repository, reconcile this file with any existing wrangler config.
+  "$schema": "node_modules/wrangler/config-schema.json",
   "name": "daphi-website",
-  "compatibility_date": "2026-10-11",
+  "compatibility_date": "2026-10-01",
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "not_found_handling": "404-page"
   }
 }

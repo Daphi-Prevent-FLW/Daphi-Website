@@ -1,0 +1,49 @@
+---
+/** Bilingual 404 (single file: Cloudflare serves it for every unknown URL). Shows both languages, each with its own lang/dir. */
+import '../styles/global.css';
+import { LANGS, getDictionary, getDir } from '../i18n';
+import { routePath, withBase } from '../lib/routes';
+
+const blocks = LANGS.map((code) => {
+  const d = getDictionary(code);
+  return { code, dir: getDir(code), ...d.notFound, href: routePath(code, 'home') };
+});
+---
+
+<!doctype html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Page not found | העמוד לא נמצא</title>
+    <meta name="robots" content="noindex" />
+    <meta name="theme-color" content="#f9f6e9" />
+    <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+  </head>
+  <body>
+    <main id="main" class="container nf">
+      {
+        blocks.map((b) => (
+          <section lang={b.code} dir={b.dir}>
+            <h1>{b.title}</h1>
+            <p>{b.body}</p>
+            <p>
+              <a href={b.href}>{b.homeLink}</a>
+            </p>
+          </section>
+        ))
+      }
+    </main>
+  </body>
+</html>
+
+<style>
+  .nf {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl);
+  }
+  h1 {
+    font-size: var(--step-3);
+  }
+</style>

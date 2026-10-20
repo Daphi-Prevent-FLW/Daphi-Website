@@ -1,0 +1,65 @@
+---
+/**
+ * <head> contents: title, description, canonical (only when siteUrl is configured),
+ * hreflang alternates + x-default, Open Graph, favicon, font preloads.
+ * Without siteUrl, hreflang/OG URLs are root-relative (valid for local testing; set siteUrl for production).
+ */
+import { siteConfig } from '../config/site.config.mjs';
+import { LANGS, getDictionary, type Lang } from '../i18n';
+import { resolveBrandAsset } from '../lib/brand';
+import { routePath, rootPath, withBase, type RouteId } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  routeId: RouteId;
+  title: string;
+  description: string;
+}
+const { lang, routeId, title, description } = Astro.props;
+
+const site = siteConfig.siteUrl ? siteConfig.siteUrl.replace(/\/+$/, '') : '';
+const abs = (path: string) => (site ? site + path : path);
+
+const selfPath = routePath(lang, routeId);
+const canonical = site ? abs(selfPath) : null;
+const alternates = LANGS.map((code) => ({ code, href: abs(routePath(code, routeId)) }));
+const xDefault = abs(rootPath());
+
+const og = resolveBrandAsset(siteConfig.assets.ogImage);
+const dict = getDictionary(lang);
+const otherLocales = LANGS.filter((c) => c !== lang).map((c) => getDictionary(c).lang.ogLocale);
+
+// Preload only the Latin face (all pages contain Latin glyphs) plus the Hebrew face on /he/ pages.
+const fontPreloads = [
+  'secular-one-latin-400-normal.woff2',
+  'varela-round-latin-400-normal.woff2',
+  ...(lang === 'he' ? ['secular-one-hebrew-400-normal.woff2', 'varela-round-hebrew-400-normal.woff2'] : []),
+];
+---
+
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>{title}</title>
+<meta name="description" content={description} />
+<meta name="theme-color" content="#f9f6e9" />
+
+{canonical && <link rel="canonical" href={canonical} />}
+{alternates.map((a) => <link rel="alternate" hreflang={a.code} href={a.href} />)}
+<link rel="alternate" hreflang="x-default" href={xDefault} />
+
+<link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+{
+  fontPreloads.map((file) => (
+    <link rel="preload" href={withBase(`fonts/${file}`)} as="font" type="font/woff2" crossorigin />
+  ))
+}
+
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content={dict.meta.siteName} />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:locale" content={dict.lang.ogLocale} />
+{otherLocales.map((l) => <meta property="og:locale:alternate" content={l} />)}
+{canonical && <meta property="og:url" content={canonical} />}
+{og && <meta property="og:image" content={abs(og.src)} />}
+<meta name="twitter:card" content={og ? 'summary_large_image' : 'summary'} />

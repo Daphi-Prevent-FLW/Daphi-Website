@@ -1,11 +1,113 @@
+---
+/**
+ * Root "/" = language entry page. Works with no JavaScript (two plain links).
+ * Progressive enhancement: if the browser's preferred language is Hebrew it goes to /he/,
+ * otherwise it stays here and offers the choice. English is the default language (/en/).
+ * Documented in README ("Routing and localization").
+ */
+import '../styles/global.css';
+import { siteConfig } from '../config/site.config.mjs';
+import { LANGS, getDictionary } from '../i18n';
+import { routePath } from '../lib/routes';
+import { withBase } from '../lib/routes';
+
+const options = LANGS.map((code) => ({
+  code,
+  name: getDictionary(code).lang.nativeName,
+  tagline: getDictionary(code).pages.home.title,
+  href: routePath(code, 'home'),
+}));
+const site = siteConfig.siteUrl ? siteConfig.siteUrl.replace(/\/+$/, '') : '';
+---
+
 <!doctype html>
-<html lang="en">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Daphi's website</title>
+    <title>Daphi | דפי</title>
+    <meta name="description" content="Daphi is a nonprofit working to eliminate food loss and waste. Choose a language: English or Hebrew." />
+    <meta name="theme-color" content="#f9f6e9" />
+    <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
+    <link rel="preload" href={withBase('fonts/secular-one-latin-400-normal.woff2')} as="font" type="font/woff2" crossorigin />
+    {options.map((o) => <link rel="alternate" hreflang={o.code} href={site + o.href} />)}
+    <link rel="alternate" hreflang="x-default" href={site + routePath('en', 'home')} />
+    {site && <link rel="canonical" href={site + withBase('')} />}
   </head>
   <body>
-    Welcome to Daphi's website :)
+    <main id="main" class="entry">
+      <div class="container">
+        <h1 class="visually-hidden">Daphi | דפי</h1>
+        <ul class="entry__choices">
+          {
+            options.map((o) => (
+              <li>
+                <a class="entry__link" href={o.href} lang={o.code} hreflang={o.code} dir={o.code === 'he' ? 'rtl' : 'ltr'}>
+                  <span class="entry__name">{o.name}</span>
+                  <span class="entry__tagline">{o.tagline}</span>
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+    </main>
+
+    <script is:inline>
+      // Progressive enhancement only: send Hebrew-preferring browsers straight to /he/.
+      (function () {
+        try {
+          var langs = navigator.languages && navigator.languages.length ? navigator.languages : [navigator.language];
+          var first = String(langs[0] || '').toLowerCase();
+          if (first === 'he' || first.indexOf('he-') === 0 || first === 'iw') {
+            location.replace(document.querySelector('a[hreflang="he"]').getAttribute('href'));
+          }
+        } catch (e) {}
+      })();
+    </script>
   </body>
 </html>
+
+<style>
+  .entry {
+    display: grid;
+    place-items: center;
+    min-block-size: 100vh;
+    min-block-size: 100dvh;
+    padding-block: var(--space-xl);
+  }
+  .entry__choices {
+    display: grid;
+    gap: var(--space-m);
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .entry__link {
+    display: grid;
+    gap: var(--space-2xs);
+    padding: var(--space-l);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-m);
+    text-decoration: none;
+    background: var(--color-surface);
+    transition: background var(--transition);
+  }
+  .entry__link:hover {
+    background: var(--color-bg);
+    border-color: var(--color-text);
+  }
+  .entry__name {
+    font-family: var(--font-heading);
+    font-size: var(--step-3);
+    line-height: 1.1;
+  }
+  .entry__tagline {
+    font-size: var(--step-1);
+  }
+  @media (min-width: 40em) {
+    .entry__choices {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+</style>

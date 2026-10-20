@@ -1,0 +1,106 @@
+/**
+ * HEBREW strings (written by the model; pending native-speaker review, see HEBREW_REVIEW.md).
+ * Must match the shape of the English dictionary.
+ */
+import type { Dictionary } from './en';
+
+const he: Dictionary = {
+  lang: {
+    code: 'he',
+    ogLocale: 'he_IL',
+    nativeName: 'עברית',
+  },
+
+  meta: {
+    siteName: 'דפי',
+    defaultDescription: 'דפי היא עמותה הפועלת למיגור אובדן ובזבוז מזון.',
+    fallbackWordmark: 'דפי',
+  },
+
+  nav: {
+    home: 'דף הבית',
+    flwPrevention: 'מניעת אובדן ובזבוז מזון',
+    partnerships: 'שותפויות',
+    data: 'נתונים',
+    about: 'אודות',
+    resources: 'מקורות',
+    acknowledgments: 'תודות',
+  },
+
+  ui: {
+    skipToContent: 'דילוג לתוכן הראשי',
+    homeLinkLabel: 'דפי, דף הבית',
+    primaryNavLabel: 'ניווט ראשי',
+    footerNavLabel: 'ניווט תחתון',
+    menu: 'תפריט',
+    openMenu: 'פתיחת התפריט',
+    closeMenu: 'סגירת התפריט',
+    languageSwitcherLabel: 'שפה',
+    switchToLanguage: { en: 'מעבר לאנגלית', he: 'מעבר לעברית' },
+    contactHeading: 'יצירת קשר',
+    emailLinkLabel: 'שליחת דוא״ל אל דפי',
+    copyright: '© דפי',
+    placeholderBadge: 'טקסט זמני',
+    fallbackLogoTitle: 'שם טקסטואלי זמני: קובץ הלוגו הרשמי טרם נוסף',
+  },
+
+  stub: {
+    notice: '[PLACEHOLDER] תוכן העמוד יתווסף בשלב מאוחר יותר של הבנייה.',
+  },
+
+  pages: {
+    home: {
+      title: 'אנחנו מונעים בזבוז מזון.',
+      metaTitle: 'דפי | אנחנו מונעים בזבוז מזון',
+      description:
+        'דפי היא עמותה הפועלת למיגור אובדן ובזבוז מזון. כך אנחנו עוזרים לעסקי מזון למנוע אותם.',
+      lead: 'דפי היא עמותה הפועלת למיגור אובדן ובזבוז מזון.',
+    },
+    flwPrevention: {
+      title: 'מניעת אובדן ובזבוז מזון',
+      metaTitle: 'מניעת אובדן ובזבוז מזון | דפי',
+      description: 'כיצד עסקי מזון יכולים למנוע אובדן ובזבוז מזון, וכיצד דפי יכולה לסייע.',
+      lead: 'מניעת אובדן ובזבוז מזון בעסקי מזון.',
+    },
+    partnerships: {
+      title: 'שותפויות',
+      metaTitle: 'שותפויות | דפי',
+      description:
+        'דרכים לספקי טכנולוגיה, יועצים ואנשי מקצוע נוספים לעבוד עם דפי כדי לסייע לעסקי מזון.',
+      lead: 'עבודה משותפת עם אנשי מקצוע וארגונים שמסייעים לעסקי מזון.',
+    },
+    data: {
+      title: 'נתונים',
+      metaTitle: 'נתונים | דפי',
+      description:
+        'נתונים מפורטים על אובדן ובזבוז מזון: פלטפורמת הנתונים המתוכננת שלנו, בקשות למדידה ושיתוף של מערכי נתונים קיימים.',
+      lead: 'נתונים מפורטים על אובדן ובזבוז מזון.',
+    },
+    about: {
+      title: 'אודות',
+      metaTitle: 'אודות | דפי',
+      description: 'אודות דפי: הסיפור שלנו, דרך העבודה שלנו ולוח הזמנים של הפרויקטים.',
+      lead: 'הסיפור שלנו, דרך העבודה שלנו והפרויקטים שלנו.',
+    },
+    resources: {
+      title: 'מקורות והפניות',
+      metaTitle: 'מקורות והפניות | דפי',
+      description: 'המקורות וההפניות העומדים מאחורי הטענות המופיעות באתר זה.',
+      lead: 'המקורות העומדים מאחורי הטענות באתר.',
+    },
+    acknowledgments: {
+      title: 'תודות',
+      metaTitle: 'תודות | דפי',
+      description: 'האנשים שתרמו לדפי.',
+      lead: 'האנשים שתרמו לדפי.',
+    },
+  },
+
+  notFound: {
+    title: 'העמוד לא נמצא',
+    body: 'העמוד שחיפשתם אינו קיים או שהועבר למקום אחר.',
+    homeLink: 'מעבר לדף הבית',
+  },
+};
+
+export default he;
