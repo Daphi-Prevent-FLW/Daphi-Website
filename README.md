@@ -109,3 +109,8 @@ later stage if desired.
 Official logos (EN/HE) and email icon, production domain, Google Doc URL for the future platform, application URL, real references and
 statistics, verified sensor details, About text, acknowledgment entries, prevention-process infographic, native review of Hebrew copy.
 Full list: `HANDOFF.md`.
+
+## License
+* The *software* is under AGPL-3.0.
+* For *trademarks*, *logos*, *graphics*, *articles*, *data*, and all other forms of content and brand material and identity, see [TRADEMARKS.md](/TRADEMARKS.md) and [CONTENT-AND_DATA-LICENSE.md](/CONTENT-AND_DATA-LICENSE.md).
+
