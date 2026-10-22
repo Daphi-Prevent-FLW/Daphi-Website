@@ -5,6 +5,8 @@
  */
 import PageHeading from './PageHeading.astro';
 import PlaceholderMark from './PlaceholderMark.astro';
+import CitationDemo from './CitationDemo.astro';
+import { stripPlaceholderMarkup } from '../lib/placeholder';
 import { getDictionary, type Lang } from '../i18n';
 import type { RouteId } from '../lib/routes';
 
@@ -21,6 +23,7 @@ const page = dict.pages[routeId];
 <section class="container stub">
   <p>
     <PlaceholderMark lang={lang} />
-    {dict.stub.notice}
+    {stripPlaceholderMarkup(dict.stub.notice)}
   </p>
 </section>
+{(routeId === 'home' || routeId === 'flwPrevention') && <CitationDemo lang={lang} routeId={routeId} />}

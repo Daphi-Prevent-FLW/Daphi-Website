@@ -1,16 +1,70 @@
 ---
-// Route: /{lang}/resources/  (en + he). Stage 1 stub: replaced by real content in a later stage.
+// Route: /{lang}/resources/  (en + he). Reference registry page.
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import StubPage from '../../components/StubPage.astro';
-import { langStaticPaths, type Lang } from '../../i18n';
+import PageHeading from '../../components/PageHeading.astro';
+import PlaceholderMark from '../../components/PlaceholderMark.astro';
+import ReferenceEntry from '../../components/ReferenceEntry.astro';
+import { langStaticPaths, getDictionary, type Lang } from '../../i18n';
+import { references, isUnverified } from '../../lib/references';
+import { buildMailto } from '../../lib/mailto';
+import { stripPlaceholderMarkup } from '../../lib/placeholder';
 
 export function getStaticPaths() {
   return langStaticPaths();
 }
 
 const lang = Astro.params.lang as Lang;
+const dict = getDictionary(lang);
+const page = dict.pages.resources;
+const anyUnverified = references.some(isUnverified);
+const mistakeHref = buildMailto({ subject: dict.refs.mistake.subject, body: dict.refs.mistake.body });
 ---
 
 <BaseLayout lang={lang} routeId="resources">
-  <StubPage lang={lang} routeId="resources" />
+  <PageHeading title={page.title} lead={page.lead} />
+
+  <section class="container resources-intro" aria-label={dict.refs.listHeading}>
+    <p>{dict.refs.intro}</p>
+    {
+      anyUnverified && (
+        <p class="resources-notice">
+          <PlaceholderMark lang={lang} kind="reference" /> {stripPlaceholderMarkup(dict.refs.placeholderNotice)}
+        </p>
+      )
+    }
+  </section>
+
+  <section class="container" aria-labelledby="references-heading">
+    <h2 id="references-heading" class="visually-hidden">{dict.refs.listHeading}</h2>
+    <ol class="ref-list">
+      {references.map((reference) => <ReferenceEntry reference={reference} lang={lang} />)}
+    </ol>
+  </section>
+
+  <section class="container mistake" id="report-mistake" aria-labelledby="mistake-text">
+    <p id="mistake-text">
+      <strong>{dict.refs.mistake.text}</strong>
+      <a href={mistakeHref}>{dict.refs.mistake.link}</a>
+    </p>
+  </section>
 </BaseLayout>
+
+<style>
+  .resources-intro {
+    padding-block-end: var(--space-m);
+  }
+  .ref-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-block-start: var(--border-width) solid var(--color-border);
+  }
+  .mistake {
+    padding-block: var(--space-l) var(--space-xl);
+    font-size: var(--step-1);
+  }
+  .mistake a {
+    margin-inline-start: var(--space-2xs);
+    font-weight: 700;
+  }
+</style>

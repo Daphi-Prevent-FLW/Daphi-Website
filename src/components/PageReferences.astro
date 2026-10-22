@@ -1,0 +1,68 @@
+---
+/**
+ * Compact list of the references cited on the current page, linking to the full entries.
+ * Rendered automatically at the bottom of <main> by BaseLayout; renders nothing when the page
+ * cites nothing. All data comes from the central registry (nothing is duplicated here).
+ */
+import PlaceholderMark from './PlaceholderMark.astro';
+import { referencesOfPage, referenceNumber, referenceHref, localized, isUnverified } from '../lib/references';
+import { getDictionary, type Lang } from '../i18n';
+import type { RouteId } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  routeId: RouteId;
+}
+const { lang, routeId } = Astro.props;
+const dict = getDictionary(lang);
+const refs = referencesOfPage(routeId);
+---
+
+{
+  refs.length > 0 && (
+    <aside class="page-refs" aria-labelledby="page-refs-heading">
+      <div class="container">
+        <h2 id="page-refs-heading" class="page-refs__heading">
+          {dict.refs.pageReferencesHeading}
+        </h2>
+        <ol class="page-refs__list">
+          {refs.map((ref) => (
+            <li>
+              <a href={referenceHref(lang, ref.id)}>
+                <bdi dir="ltr">[{referenceNumber(ref.id)}]</bdi> {localized(ref.title, lang)}
+              </a>
+              {isUnverified(ref) && (
+                <>
+                  {' '}
+                  <PlaceholderMark lang={lang} kind="reference" />
+                </>
+              )}
+            </li>
+          ))}
+        </ol>
+      </div>
+    </aside>
+  )
+}
+
+<style>
+  .page-refs {
+    margin-block-start: var(--space-xl);
+    padding-block: var(--space-l);
+    border-block-start: var(--border-width) solid var(--color-border);
+  }
+  .page-refs__heading {
+    font-family: var(--font-body);
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+  .page-refs__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--step--1);
+  }
+  .page-refs__list li {
+    padding-block: var(--space-3xs);
+  }
+</style>

@@ -1,0 +1,227 @@
+---
+/**
+ * Numbered citation marker, e.g. [1].
+ *
+ *   <Cite id="c-home-demo-1" lang={lang} />       (id = citation instance in src/data/citations.mjs)
+ *
+ * Baseline (no JavaScript, no hover): a plain anchor to the reference entry on the Resources page.
+ * Enhancement (small script below): a source-summary popover on hover, keyboard focus, or tap.
+ *   - Hover/focus opens it; Escape closes it (WCAG 1.4.13: dismissible, hoverable, persistent).
+ *   - On touch screens the first tap opens the popover, which contains a "View full reference" link;
+ *     tapping the marker again follows the link.
+ *   - The popover is positioned with fixed coordinates, flipped above the marker if there is no room
+ *     below, and clamped inside the viewport, in LTR and RTL.
+ * The popover text is also exposed through aria-describedby (even while hidden).
+ */
+import { getCitation, getReference, referenceNumber, referenceHref, localized, isUnverified } from '../lib/references';
+import { getDictionary, type Lang } from '../i18n';
+import PlaceholderMark from './PlaceholderMark.astro';
+
+interface Props {
+  id: string;
+  lang: Lang;
+}
+const { id, lang } = Astro.props;
+const dict = getDictionary(lang);
+const citation = getCitation(id);
+const ref = getReference(citation.ref);
+const number = referenceNumber(ref.id);
+const href = referenceHref(lang, ref.id);
+const title = localized(ref.title, lang);
+const organization = localized(ref.organization, lang);
+const summary = [title, organization, ref.year].filter(Boolean).join(' · ');
+---
+
+<span class="cite" data-cite={id} data-cite-ref={ref.id} data-cite-number={number}>
+  <a class="cite__link" id={id} href={href} aria-describedby={`${id}-summary`}>
+    <span class="visually-hidden">{dict.refs.referenceWord} </span><bdi dir="ltr">[{number}]</bdi>
+  </a>
+  <span class="cite__pop" hidden>
+    <span class="cite__summary" id={`${id}-summary`}>{summary}</span>
+    {
+      isUnverified(ref) && (
+        <span class="cite__status">
+          <PlaceholderMark lang={lang} kind="reference" /> {dict.refs.status[ref.status]}
+        </span>
+      )
+    }
+    <a class="cite__more" href={href}>{dict.refs.viewFull}</a>
+  </span>
+</span>
+
+<style is:global>
+  .cite {
+    display: inline;
+    white-space: nowrap;
+  }
+  .cite__link {
+    font-size: 0.8em;
+    font-weight: 700;
+    text-decoration: none;
+    /* Superscript without changing the line height. */
+    position: relative;
+    inset-block-start: -0.45em;
+    padding-inline: 0.15em;
+    border-radius: 3px;
+  }
+  .cite__link:hover,
+  .cite__link[aria-expanded='true'] {
+    background: var(--color-surface);
+    text-decoration: underline;
+  }
+  .cite__pop {
+    position: fixed;
+    z-index: 50;
+    inline-size: min(22rem, calc(100vw - 1rem));
+    padding: var(--space-xs) var(--space-s);
+    background: var(--color-strong);
+    color: var(--color-on-strong);
+    border-radius: var(--radius-s);
+    box-shadow: 0 0.25rem 1rem rgb(6 100 102 / 0.35);
+    font-size: var(--step--1);
+    line-height: 1.5;
+    font-weight: 400;
+    white-space: normal;
+    text-align: start;
+  }
+  .cite__pop[hidden] {
+    display: none;
+  }
+  .cite__summary {
+    display: block;
+    font-weight: 700;
+  }
+  .cite__status {
+    display: block;
+    margin-block-start: var(--space-3xs);
+  }
+  .cite__more {
+    display: inline-block;
+    margin-block-start: var(--space-2xs);
+    color: var(--color-on-strong);
+    font-weight: 700;
+  }
+  .cite__more:focus-visible {
+    outline-color: var(--color-on-strong);
+  }
+</style>
+
+<script>
+  // Progressive enhancement only: without this script every marker is still a working link.
+  const OPEN_DELAY = 120;
+  const CLOSE_DELAY = 250;
+  const GAP = 6;
+  const MARGIN = 8;
+
+  let current: HTMLElement | null = null;
+  let openTimer: number | undefined;
+  let closeTimer: number | undefined;
+  let touchPointer = false;
+
+  const markerOf = (el: Element | null) => (el ? (el.closest('[data-cite]') as HTMLElement | null) : null);
+  const popOf = (marker: HTMLElement) => marker.querySelector<HTMLElement>('.cite__pop')!;
+  const linkOf = (marker: HTMLElement) => marker.querySelector<HTMLElement>('.cite__link')!;
+
+  function position(marker: HTMLElement) {
+    const pop = popOf(marker);
+    const link = linkOf(marker);
+    const rect = link.getBoundingClientRect();
+    const vw = document.documentElement.clientWidth;
+    const vh = window.innerHeight;
+    const rtl = getComputedStyle(document.documentElement).direction === 'rtl';
+    const width = pop.offsetWidth;
+    const height = pop.offsetHeight;
+    // Centre on the marker, then clamp into the viewport.
+    let left = rect.left + rect.width / 2 - width / 2;
+    left = Math.max(MARGIN, Math.min(left, vw - width - MARGIN));
+    // Below the marker unless it does not fit and there is more room above.
+    const below = rect.bottom + GAP;
+    const above = rect.top - GAP - height;
+    const top = below + height > vh && above >= 0 ? above : below;
+    // Fixed + logical insets: inset-inline-start is measured from the right edge in RTL.
+    pop.style.insetInlineStart = `${rtl ? vw - (left + width) : left}px`;
+    pop.style.insetBlockStart = `${Math.max(MARGIN, top)}px`;
+  }
+
+  function open(marker: HTMLElement) {
+    window.clearTimeout(closeTimer);
+    if (current && current !== marker) close(current);
+    const pop = popOf(marker);
+    pop.hidden = false;
+    linkOf(marker).setAttribute('aria-expanded', 'true');
+    position(marker);
+    current = marker;
+  }
+
+  function close(marker: HTMLElement) {
+    popOf(marker).hidden = true;
+    linkOf(marker).removeAttribute('aria-expanded');
+    if (current === marker) current = null;
+  }
+
+  const scheduleOpen = (marker: HTMLElement) => {
+    window.clearTimeout(closeTimer);
+    window.clearTimeout(openTimer);
+    openTimer = window.setTimeout(() => open(marker), OPEN_DELAY);
+  };
+  const scheduleClose = (marker: HTMLElement) => {
+    window.clearTimeout(openTimer);
+    window.clearTimeout(closeTimer);
+    closeTimer = window.setTimeout(() => close(marker), CLOSE_DELAY);
+  };
+
+  document.addEventListener('pointerdown', (e) => {
+    touchPointer = e.pointerType === 'touch' || e.pointerType === 'pen';
+    // Tap outside any open popover closes it.
+    if (current && !markerOf(e.target as Element)) close(current);
+  });
+
+  // Hover (mouse only: touch emulates mouseenter, which must not double-trigger).
+  document.addEventListener('mouseover', (e) => {
+    if (touchPointer) return;
+    const marker = markerOf(e.target as Element);
+    if (marker && !marker.contains(e.relatedTarget as Node | null)) scheduleOpen(marker);
+  });
+  document.addEventListener('mouseout', (e) => {
+    if (touchPointer) return;
+    const marker = markerOf(e.target as Element);
+    if (marker && !marker.contains(e.relatedTarget as Node | null)) scheduleClose(marker);
+  });
+
+  // Keyboard focus.
+  document.addEventListener('focusin', (e) => {
+    // A tap can also move focus; on touch the click handler below decides (first tap = popover).
+    if (touchPointer) return;
+    const marker = markerOf(e.target as Element);
+    if (marker) open(marker);
+  });
+  document.addEventListener('focusout', (e) => {
+    const marker = markerOf(e.target as Element);
+    if (marker && !marker.contains((e as FocusEvent).relatedTarget as Node | null)) close(marker);
+  });
+
+  // First tap on a marker (touch) opens the popover instead of navigating; second tap follows the link.
+  document.addEventListener('click', (e) => {
+    const link = (e.target as Element).closest('.cite__link');
+    if (!link) return;
+    const marker = markerOf(link)!;
+    if (touchPointer && popOf(marker).hidden) {
+      e.preventDefault();
+      open(marker);
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    touchPointer = false; // keyboard use on a hybrid device: behave as keyboard
+    if (e.key === 'Escape' && current) {
+      const marker = current;
+      close(marker);
+      // Keep keyboard users where they were.
+      if (marker.contains(document.activeElement)) linkOf(marker).focus({ preventScroll: true });
+    }
+  });
+
+  const reposition = () => current && position(current);
+  window.addEventListener('scroll', reposition, { passive: true });
+  window.addEventListener('resize', reposition);
+</script>

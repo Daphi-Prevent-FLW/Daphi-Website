@@ -76,7 +76,7 @@ for (const { lang, route, file, label } of pages) {
 
   // Links and assets.
   for (const m of html.matchAll(/\b(?:href|src)="([^"]+)"/g)) {
-    const url = m[1];
+    const url = m[1].replaceAll('&amp;', '&'); // attribute values are HTML-escaped (mailto links with ?subject=&body=)
     if (url.startsWith('mailto:')) {
       if (!mailtoRe.test(url)) err(label, `malformed mailto: ${url}`);
       continue;

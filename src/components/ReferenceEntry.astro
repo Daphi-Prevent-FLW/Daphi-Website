@@ -1,0 +1,169 @@
+---
+/**
+ * One entry of the Resources page: number, title, status, bibliographic fields (only those that
+ * exist), description and backlinks to every place that cites it. All data comes from the central
+ * registry (src/data/references.mjs + src/data/citations.mjs).
+ */
+import PlaceholderMark from './PlaceholderMark.astro';
+import { getDictionary, type Lang } from '../i18n';
+import {
+  citationsOfReference,
+  doiHref,
+  isUnverified,
+  localized,
+  refAnchor,
+  referenceNumber,
+  type Reference,
+} from '../lib/references';
+import { routePath } from '../lib/routes';
+
+interface Props {
+  reference: Reference;
+  lang: Lang;
+}
+const { reference: ref, lang } = Astro.props;
+const dict = getDictionary(lang);
+const number = referenceNumber(ref.id);
+const fields = [
+  { key: 'organization', value: localized(ref.organization, lang) },
+  { key: 'year', value: ref.year ?? '' },
+  { key: 'publisher', value: localized(ref.publisher, lang) },
+  { key: 'locator', value: localized(ref.locator, lang) },
+].filter((f) => f.value) as { key: 'organization' | 'year' | 'publisher' | 'locator'; value: string }[];
+
+// Backlinks: label = "<page>: <section>"; repeated citations in the same place get "(n)".
+const seen = new Map<string, number>();
+const backlinks = citationsOfReference(ref.id).map((c) => {
+  const base = `${dict.nav[c.page]}: ${dict.refs.sections[c.section as keyof typeof dict.refs.sections] ?? c.section}`;
+  const n = (seen.get(base) ?? 0) + 1;
+  seen.set(base, n);
+  return { c, base, n };
+});
+const totals = new Map<string, number>();
+for (const b of backlinks) totals.set(b.base, (totals.get(b.base) ?? 0) + 1);
+---
+
+<li class="ref" id={refAnchor(ref.id)}>
+  <h3 class="ref__title">
+    <span class="ref__number"><bdi dir="ltr">[{number}]</bdi></span>
+    {localized(ref.title, lang)}
+  </h3>
+
+  {
+    isUnverified(ref) && (
+      <p class="ref__status">
+        <PlaceholderMark lang={lang} kind="reference" /> {dict.refs.status[ref.status]}
+      </p>
+    )
+  }
+
+  <p class="ref__description">{localized(ref.description, lang)}</p>
+
+  {
+    (fields.length > 0 || ref.doi || ref.url) && (
+      <dl class="ref__fields">
+        {fields.map((f) => (
+          <>
+            <dt>{dict.refs.fields[f.key]}</dt>
+            <dd>{f.value}</dd>
+          </>
+        ))}
+        {ref.doi && (
+          <>
+            <dt>{dict.refs.fields.doi}</dt>
+            <dd>
+              <a href={doiHref(ref.doi)} rel="noopener noreferrer">
+                <bdi dir="ltr">{ref.doi}</bdi>
+              </a>
+            </dd>
+          </>
+        )}
+        {ref.url && (
+          <>
+            <dt>{dict.refs.fields.url}</dt>
+            <dd>
+              <a href={ref.url} rel="noopener noreferrer">
+                <bdi dir="ltr">{ref.url}</bdi>
+              </a>
+            </dd>
+          </>
+        )}
+      </dl>
+    )
+  }
+
+  <div class="ref__cited">
+    <span class="ref__cited-label">{dict.refs.citedIn}</span>
+    {
+      backlinks.length === 0 ? (
+        <span>{dict.refs.notCited}</span>
+      ) : (
+        <ul class="ref__backlinks">
+          {backlinks.map(({ c, base, n }) => (
+            <li>
+              <a href={routePath(lang, c.page, c.id)} data-backlink={c.id}>
+                {base}
+                {(totals.get(base) ?? 1) > 1 && ` (${n})`}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</li>
+
+<style>
+  .ref {
+    padding-block: var(--space-m);
+    border-block-end: var(--border-width) solid var(--color-border);
+  }
+  .ref__title {
+    margin-block-end: var(--space-2xs);
+  }
+  .ref__number {
+    color: var(--color-accent-text);
+    margin-inline-end: var(--space-2xs);
+  }
+  .ref__status,
+  .ref__description {
+    margin-block-end: var(--space-2xs);
+  }
+  .ref__fields {
+    display: grid;
+    grid-template-columns: max-content 1fr;
+    gap: var(--space-3xs) var(--space-s);
+    margin: 0 0 var(--space-xs);
+    font-size: var(--step--1);
+  }
+  .ref__fields dt {
+    font-weight: 700;
+  }
+  .ref__fields dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+  }
+  .ref__cited {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2xs) var(--space-s);
+    font-size: var(--step--1);
+  }
+  .ref__cited-label {
+    font-weight: 700;
+  }
+  .ref__backlinks {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3xs) var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  /* Landing on an entry from a citation marker: outline (not colour alone). */
+  .ref:target {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 0.5rem;
+    border-radius: var(--radius-s);
+  }
+</style>

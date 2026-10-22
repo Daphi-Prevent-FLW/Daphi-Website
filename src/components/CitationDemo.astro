@@ -1,0 +1,77 @@
+---
+/**
+ * STAGE 2 DEMONSTRATION ONLY: exercises citation markers (repeats, several pages), a statistic placeholder,
+ * popovers and backlinks on the Home and FLW Prevention stubs. Delete this component, its `demo` strings
+ * and the `c-*-demo-*` / `stat-demo-*` records when Stage 3 adds the real content.
+ */
+import Cite from './Cite.astro';
+import StatPlaceholder from './StatPlaceholder.astro';
+import PlaceholderMark from './PlaceholderMark.astro';
+import { stripPlaceholderMarkup } from '../lib/placeholder';
+import { getDictionary, type Lang } from '../i18n';
+import type { RouteId } from '../lib/routes';
+
+interface Props {
+  lang: Lang;
+  routeId: RouteId;
+}
+const { lang, routeId } = Astro.props;
+const dict = getDictionary(lang);
+const d = dict.demo;
+---
+
+<section class="container demo" aria-labelledby="demo-heading">
+  <h2 id="demo-heading">{d.heading}</h2>
+  <p class="demo__note"><PlaceholderMark lang={lang} /> {stripPlaceholderMarkup(d.note)}</p>
+  {
+    routeId === 'home' && (
+      <>
+        <p>
+          {d.home.a}<Cite id="c-home-demo-1" lang={lang} />
+        </p>
+        <p>
+          {d.home.b}<Cite id="c-home-demo-2" lang={lang} />
+        </p>
+        <p>
+          {d.home.c}<Cite id="c-home-demo-3" lang={lang} />
+        </p>
+      </>
+    )
+  }
+  {
+    routeId === 'flwPrevention' && (
+      <>
+        <p>
+          {d.prevention.a}<Cite id="c-prevention-demo-1" lang={lang} />
+        </p>
+        <p>
+          {d.prevention.b}<Cite id="c-prevention-demo-2" lang={lang} />
+        </p>
+        <p>
+          {d.prevention.c}<Cite id="c-prevention-demo-3" lang={lang} />
+        </p>
+        <p>
+          {d.prevention.d}<Cite id="c-prevention-demo-4" lang={lang} />
+        </p>
+        <p>
+          {d.prevention.e}<Cite id="c-prevention-demo-5" lang={lang} />
+        </p>
+        <p>
+          {d.prevention.statLead} <StatPlaceholder id="stat-demo-global-estimate" lang={lang} /> {d.prevention.statTail}
+        </p>
+      </>
+    )
+  }
+</section>
+
+<style>
+  .demo {
+    padding-block: var(--space-l);
+  }
+  .demo h2 {
+    font-size: var(--step-2);
+  }
+  .demo__note {
+    font-size: var(--step--1);
+  }
+</style>

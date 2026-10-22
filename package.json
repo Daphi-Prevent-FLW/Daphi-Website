@@ -9,14 +9,17 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro build && node scripts/check-routes.mjs",
+    "build": "astro build && node scripts/validate-refs.mjs --require-dist && node scripts/check-routes.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "check:routes": "node scripts/check-routes.mjs",
-    "validate": "npm run check:contrast && npm run test:mailto && npm run check:routes",
+    "validate": "npm run check:contrast && npm run test:mailto && npm run test:refs && npm run validate:refs && npm run check:routes",
     "sync:fonts": "node scripts/sync-fonts.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
-    "test:mailto": "node scripts/test-mailto.mjs"
+    "test:mailto": "node scripts/test-mailto.mjs",
+    "validate:refs": "node scripts/validate-refs.mjs",
+    "test:refs": "node scripts/test-validate-refs.mjs",
+    "list:placeholders": "node scripts/list-placeholders.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

@@ -42,11 +42,73 @@ const en = {
     emailLinkLabel: 'Email Daphi',
     copyright: '© Daphi',
     placeholderBadge: 'Placeholder',
+    placeholderBadgeStat: 'Statistic placeholder',
+    placeholderBadgeRef: 'Reference placeholder',
     fallbackLogoTitle: 'Fallback wordmark: the official logo file has not been added yet',
   },
 
   stub: {
     notice: '[PLACEHOLDER] The content of this page will be added in a later build stage.',
+  },
+
+  /** References, citation markers and the Resources page (Stage 2). */
+  refs: {
+    /** Visually hidden word read before a citation number, e.g. "Reference [1]". */
+    referenceWord: 'Reference',
+    listHeading: 'References',
+    intro:
+      'Factual claims on this website should be traceable to a source listed here. Numbers in square brackets in the text link to the matching entry, and each entry links back to every place where it is cited.',
+    placeholderNotice:
+      'Every entry below is an editorial placeholder. None of them is a real publication, and no title, author, date or link here should be read as a verified source. They will be replaced with verified sources.',
+    status: {
+      placeholder: 'Editorial placeholder: not a real publication',
+      'needs-verification': 'Source added but not yet verified',
+      verified: 'Verified source',
+    },
+    fields: {
+      organization: 'Author or organization',
+      year: 'Year',
+      publisher: 'Publisher or journal',
+      doi: 'DOI',
+      url: 'Link',
+      locator: 'Location in the source',
+    },
+    citedIn: 'Cited in',
+    notCited: 'Not cited anywhere yet.',
+    /** Suffix for repeated citations in the same section, e.g. "Home: Citation demonstration (2)". */
+    citationNumber: 'citation',
+    viewFull: 'View full reference',
+    pageReferencesHeading: 'References on this page',
+    mistake: {
+      text: 'Found any mistake?',
+      link: 'Let us know!',
+      subject: 'Website correction',
+      body: 'Hello Daphi,\n\nI found a possible mistake on your website.\n\nPage or address:\nClaim or reference (a number such as [1] is enough):\nWhat seems to be wrong, and a source if you have one:\n\nThank you.',
+    },
+    /** Human labels for the `section` keys in src/data/citations.mjs (used in backlinks). Add a key per cited section. */
+    sections: {
+      demo: 'Citation demonstration',
+    },
+  },
+
+  /** Stage 2 demonstration of the citation system on the Home and FLW Prevention stubs (removed in Stage 3). */
+  demo: {
+    heading: 'Citation demonstration',
+    note: '[PLACEHOLDER] This block only demonstrates citation markers, popovers and backlinks. It is replaced by real page content in a later build stage.',
+    home: {
+      a: 'Food that is produced but never eaten is a concern for food businesses and for the environment.',
+      b: 'Losses in businesses and waste in households are different things and are described separately.',
+      c: 'The same source can be cited again wherever it is needed.',
+    },
+    prevention: {
+      a: 'Food can be lost at different stages of the supply chain.',
+      b: 'Global estimates should not be applied directly to a single business.',
+      c: 'Wasted food has environmental consequences.',
+      d: 'Measurement methods differ between studies.',
+      e: 'Several approaches to prevention exist.',
+      statLead: 'Globally, an estimated',
+      statTail: 'of food is lost or wasted.',
+    },
   },
 
   pages: {

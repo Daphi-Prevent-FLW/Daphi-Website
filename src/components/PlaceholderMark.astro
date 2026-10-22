@@ -1,19 +1,25 @@
 ---
 /**
  * Visible "placeholder" badge. Renders nothing when showPlaceholderMarkers is false in site.config.
- * Not colour-only: dashed border + text label. (Extended in Stage 2 for statistics/references.)
+ * Not colour-only: dashed border + text label.
+ *   kind="text"       generic editorial placeholder (default)
+ *   kind="statistic"  a statistic that must still be supplied
+ *   kind="reference"  a reference that is not a verified source
+ * See README "Placeholders".
  */
 import { siteConfig } from '../config/site.config.mjs';
 import { getDictionary, type Lang } from '../i18n';
 
 interface Props {
   lang: Lang;
+  kind?: 'text' | 'statistic' | 'reference';
 }
-const { lang } = Astro.props;
+const { lang, kind = 'text' } = Astro.props;
 const dict = getDictionary(lang);
+const label = { text: dict.ui.placeholderBadge, statistic: dict.ui.placeholderBadgeStat, reference: dict.ui.placeholderBadgeRef }[kind];
 ---
 
-{siteConfig.showPlaceholderMarkers && <span class="placeholder-badge" data-placeholder>{dict.ui.placeholderBadge}</span>}
+{siteConfig.showPlaceholderMarkers && <span class="placeholder-badge" data-placeholder={kind}>{label}</span>}
 
 <style>
   .placeholder-badge {

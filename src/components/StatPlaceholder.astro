@@ -1,0 +1,32 @@
+---
+/**
+ * Marked stand-in for a statistic (the site publishes no actual figures).
+ *   <StatPlaceholder id="stat-demo-global-estimate" lang={lang} />
+ * Renders a badge, the description of the missing figure, and the citation marker of the reference
+ * it is tied to (record in src/data/stat-placeholders.mjs).
+ */
+import Cite from './Cite.astro';
+import PlaceholderMark from './PlaceholderMark.astro';
+import { getStatPlaceholder, localized } from '../lib/references';
+import { stripPlaceholderMarkup } from '../lib/placeholder';
+import type { Lang } from '../i18n';
+
+interface Props {
+  id: string;
+  lang: Lang;
+}
+const { id, lang } = Astro.props;
+const stat = getStatPlaceholder(id);
+const text = stripPlaceholderMarkup(localized(stat.description, lang));
+---
+
+<span class="stat-placeholder" data-stat-placeholder={id}><PlaceholderMark lang={lang} kind="statistic" /> <span class="stat-placeholder__text">{text}</span></span><Cite id={stat.cite} lang={lang} />
+
+<style>
+  .stat-placeholder {
+    display: inline;
+  }
+  .stat-placeholder__text {
+    font-style: italic;
+  }
+</style>
