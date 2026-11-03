@@ -9,5 +9,12 @@
     "directory": "./dist",
     "not_found_handling": "404-page"
   },
-  "previews": {}
+  "previews": {},
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true,
+      "persist": true
+    }
+  }
 }
