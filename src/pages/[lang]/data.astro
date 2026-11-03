@@ -2,15 +2,25 @@
 // Route: /{lang}/data/  (en + he). Stage 1 stub: replaced by real content in a later stage.
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import StubPage from '../../components/StubPage.astro';
-import { langStaticPaths, type Lang } from '../../i18n';
+import { langStaticPaths, getDictionary, type Lang } from '../../i18n';
+import { SECTION_IDS } from '../../config/routes.mjs';
 
 export function getStaticPaths() {
   return langStaticPaths();
 }
 
 const lang = Astro.params.lang as Lang;
+const stub = getDictionary(lang).stub.sections;
 ---
 
 <BaseLayout lang={lang} routeId="data">
-  <StubPage lang={lang} routeId="data" />
+  <StubPage
+    lang={lang}
+    routeId="data"
+    sections={[
+      { id: SECTION_IDS.dataExplore, heading: stub.exploreData },
+      { id: SECTION_IDS.dataMeasurement, heading: stub.requestMeasurement },
+      { id: SECTION_IDS.dataShare, heading: stub.shareData },
+    ]}
+  />
 </BaseLayout>

@@ -2,7 +2,7 @@
 /**
  * CITATION INSTANCES: every place a reference is cited on the site.
  *
- * A marker is rendered with  <Cite id="c-home-demo-1" lang={lang} />  and the id must exist here.
+ * A marker is rendered with  <Cite id="c-home-hero-1" lang={lang} />  and the id must exist here.
  * One reference can be cited many times (one instance per place). Instance ids are permanent
  * DOM ids, used as backlink targets from the Resources page: never reuse or rename one casually.
  *
@@ -23,14 +23,22 @@
 
 /** @type {Citation[]} */
 export const citations = [
-  // Stage 2 demonstration (shown on the Home and FLW Prevention stubs; removed/replaced in Stage 3).
-  { id: 'c-home-demo-1', ref: 'flw-global-overview-01', page: 'home', section: 'demo' },
-  { id: 'c-home-demo-2', ref: 'flw-business-level-01', page: 'home', section: 'demo' },
-  { id: 'c-home-demo-3', ref: 'flw-global-overview-01', page: 'home', section: 'demo' }, // repeated reference
-  { id: 'c-prevention-demo-1', ref: 'flw-supply-chain-losses-01', page: 'flwPrevention', section: 'demo' },
-  { id: 'c-prevention-demo-2', ref: 'flw-global-overview-01', page: 'flwPrevention', section: 'demo' }, // same ref, other page
-  { id: 'c-prevention-demo-3', ref: 'flw-environment-impacts-01', page: 'flwPrevention', section: 'demo' },
-  { id: 'c-prevention-demo-4', ref: 'flw-measurement-methods-01', page: 'flwPrevention', section: 'demo' },
-  { id: 'c-prevention-demo-5', ref: 'flw-prevention-approaches-01', page: 'flwPrevention', section: 'demo' },
-  { id: 'c-prevention-demo-stat-1', ref: 'flw-global-overview-01', page: 'flwPrevention', section: 'demo' }, // used by a statistic placeholder
+  // ----- Home (hero introduction)
+  { id: 'c-home-hero-1', ref: 'flw-global-overview-01', page: 'home', section: 'hero' },
+  { id: 'c-home-hero-2', ref: 'flw-supply-chain-losses-01', page: 'home', section: 'hero' },
+  { id: 'c-home-hero-3', ref: 'flw-environment-impacts-01', page: 'home', section: 'hero' },
+
+  // ----- FLW Prevention: the scale of food loss and waste
+  { id: 'c-prevention-scale-1', ref: 'flw-measurement-methods-01', page: 'flwPrevention', section: 'scale' },
+  { id: 'c-prevention-scale-2', ref: 'flw-supply-chain-losses-01', page: 'flwPrevention', section: 'scale' },
+  { id: 'c-prevention-scale-3', ref: 'flw-measurement-methods-01', page: 'flwPrevention', section: 'scale' }, // repeated reference, other place
+  // used by the statistic placeholders (src/data/stat-placeholders.mjs)
+  { id: 'c-prevention-scale-stat-1', ref: 'flw-global-overview-01', page: 'flwPrevention', section: 'scale' },
+  { id: 'c-prevention-scale-stat-2', ref: 'flw-supply-chain-losses-01', page: 'flwPrevention', section: 'scale' },
+  { id: 'c-prevention-scale-stat-3', ref: 'flw-business-level-01', page: 'flwPrevention', section: 'scale' },
+  { id: 'c-prevention-scale-stat-4', ref: 'flw-environment-impacts-01', page: 'flwPrevention', section: 'scale' },
+
+  // ----- FLW Prevention: how prevention works
+  { id: 'c-prevention-process-1', ref: 'flw-prevention-approaches-01', page: 'flwPrevention', section: 'process' },
+  { id: 'c-prevention-process-2', ref: 'flw-measurement-methods-01', page: 'flwPrevention', section: 'process' },
 ];

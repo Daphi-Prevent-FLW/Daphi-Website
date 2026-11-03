@@ -161,3 +161,37 @@ bdi,
     scroll-behavior: auto !important;
   }
 }
+
+/* ----- Shared building blocks (Stage 3) ----- */
+
+/* Vertical rhythm for page sections. */
+.section {
+  padding-block: var(--space-l);
+}
+.section__heading {
+  margin-block-end: var(--space-m);
+}
+
+/* Primary call-to-action: a link styled as a button (all CTAs are real links, e.g. mailto:). */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-block-size: var(--touch-target);
+  padding: var(--space-2xs) var(--space-m);
+  border: var(--border-width) solid var(--color-strong);
+  border-radius: var(--radius-s);
+  background: var(--color-strong);
+  color: var(--color-on-strong);
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  transition:
+    background-color var(--transition),
+    color var(--transition);
+}
+.button:hover {
+  background: var(--color-bg);
+  color: var(--color-text);
+  text-decoration: none;
+}

@@ -1,0 +1,104 @@
+---
+/**
+ * Home page section about the sensor project: information first, funding appeal last.
+ * Content: src/data/sensor.mjs (shared with the About page). Confirmed paragraphs render plainly;
+ * every detail that is still unknown renders with a visible placeholder badge.
+ * Optional image: public/assets/brand/sensor-project.* (site.config assets.sensorImage); omitted when missing.
+ */
+import PlaceholderMark from './PlaceholderMark.astro';
+import FundingCta from './FundingCta.astro';
+import { siteConfig } from '../config/site.config.mjs';
+import { resolveBrandAsset } from '../lib/brand';
+import { localized } from '../lib/references';
+import { sensor } from '../lib/sensor';
+import { stripPlaceholderMarkup } from '../lib/placeholder';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const image = resolveBrandAsset(siteConfig.assets.sensorImage);
+---
+
+<section class="container section sensor" id="sensor" aria-labelledby="sensor-heading">
+  <h2 id="sensor-heading" class="section__heading">{localized(sensor.heading, lang)}</h2>
+
+  <div class="sensor__grid">
+    <div class="sensor__text">
+      {sensor.paragraphs.map((p) => <p>{localized(p.text, lang)}</p>)}
+    </div>
+
+    <div class="sensor__details">
+      <h3 class="sensor__details-heading">{localized(sensor.detailsHeading, lang)}</h3>
+      <dl>
+        {
+          sensor.details.map((d) => (
+            <>
+              <dt>{localized(d.label, lang)}</dt>
+              <dd>
+                {d.status === 'placeholder' && (
+                  <>
+                    <PlaceholderMark lang={lang} />{' '}
+                  </>
+                )}
+                {stripPlaceholderMarkup(localized(d.text, lang))}
+              </dd>
+            </>
+          ))
+        }
+      </dl>
+    </div>
+  </div>
+
+  {
+    image && (
+      <figure class="sensor__figure">
+        <img src={image.src} width={image.width} height={image.height} alt={localized(sensor.imageAlt, lang)} loading="lazy" decoding="async" />
+      </figure>
+    )
+  }
+
+  <FundingCta lang={lang} kind="home" level={3} />
+</section>
+
+<style>
+  .sensor__grid {
+    display: grid;
+    gap: var(--space-m);
+    margin-block-end: var(--space-l);
+  }
+  .sensor__details {
+    padding: var(--space-m);
+    border: var(--border-width) dashed var(--color-border);
+    border-radius: var(--radius-m);
+  }
+  .sensor__details-heading {
+    font-size: var(--step-0);
+    margin-block-end: var(--space-xs);
+  }
+  .sensor__details dl {
+    display: grid;
+    gap: var(--space-2xs);
+    margin: 0;
+  }
+  .sensor__details dt {
+    font-weight: 700;
+  }
+  .sensor__details dd {
+    margin: 0 0 var(--space-2xs);
+  }
+  .sensor__figure {
+    margin: 0 0 var(--space-l);
+  }
+  .sensor__figure img {
+    border-radius: var(--radius-m);
+  }
+  @media (min-width: 52em) {
+    .sensor__grid {
+      grid-template-columns: 3fr 2fr;
+      align-items: start;
+      gap: var(--space-l);
+    }
+  }
+</style>

@@ -131,15 +131,15 @@ if (!fs.existsSync(dist)) {
     return result.errors;
   };
   expect('real build output is valid', run(() => {}));
-  expect('marker removed from a page', run((edit) => edit('en/index.html', (h) => h.replace('data-cite="c-home-demo-2"', 'data-x="1"'))), /declared but not rendered/);
+  expect('marker removed from a page', run((edit) => edit('en/index.html', (h) => h.replace('data-cite="c-home-hero-2"', 'data-x="1"'))), /declared but not rendered/);
   expect('marker with the wrong number', run((edit) => edit('en/index.html', (h) => h.replace('data-cite-number="1"', 'data-cite-number="9"'))), /shows number 9/);
-  expect('backlink removed', run((edit) => edit('en/resources/index.html', (h) => h.replace('data-backlink="c-home-demo-1"', 'data-x="1"'))), /exactly one backlink/);
-  expect('backlink pointing to a missing target', run((edit) => edit('he/resources/index.html', (h) => h.replace('#c-home-demo-1', '#c-home-gone'))), /backlink/);
+  expect('backlink removed', run((edit) => edit('en/resources/index.html', (h) => h.replace('data-backlink="c-home-hero-1"', 'data-x="1"'))), /exactly one backlink/);
+  expect('backlink pointing to a missing target', run((edit) => edit('he/resources/index.html', (h) => h.replace('#c-home-hero-1', '#c-home-gone'))), /backlink/);
   expect('reference entry removed from Resources', run((edit) => edit('en/resources/index.html', (h) => h.replace('id="ref-flw-business-level-01"', 'id="ref-renamed"'))), /must appear exactly once/);
   expect('placeholder entry with an external link', run((edit) => edit('en/resources/index.html', (h) => h.replace('<p class="ref__description"', '<a href="https://example.org/fake">x</a><p class="ref__description"'))), /external link/);
   expect('placeholder entry without its status label', run((edit) => edit('en/resources/index.html', (h) => h.replaceAll(en.refs.status.placeholder, 'Reference'))), /not labelled as a placeholder/);
-  expect('stat placeholder removed from page', run((edit) => edit('en/flw-prevention/index.html', (h) => h.replace('data-stat-placeholder="stat-demo-global-estimate"', 'data-x="1"'))), /statistic placeholder/);
-  expect('unknown marker rendered', run((edit) => edit('he/index.html', (h) => h.replace('data-cite="c-home-demo-1"', 'data-cite="c-home-demo-zzz"'))), /not in src\/data\/citations/);
+  expect('stat placeholder removed from page', run((edit) => edit('en/flw-prevention/index.html', (h) => h.replace('data-stat-placeholder="stat-global-estimate"', 'data-x="1"'))), /statistic placeholder/);
+  expect('unknown marker rendered', run((edit) => edit('he/index.html', (h) => h.replace('data-cite="c-home-hero-1"', 'data-cite="c-home-hero-zzz"'))), /not in src\/data\/citations/);
   expect('page-level reference list removed', run((edit) => edit('en/flw-prevention/index.html', (h) => h.replace('class="page-refs"', 'class="other"'))), /page-level reference list/);
 }
 

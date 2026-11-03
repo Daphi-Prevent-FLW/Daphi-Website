@@ -1,0 +1,132 @@
+---
+/**
+ * "I want to:" intent tiles. Whole tile is one link. Reused on Home (three tiles) and Partnerships (two tiles, Stage 4).
+ *   <IntentTiles heading="I want to:" tiles={[{ href, title, text, icon }]} />
+ * Each tile has its own icon (original simple glyphs, decorative) and its own surface treatment
+ * (nth-child), so the tiles are visually distinct without relying on colour alone.
+ * The arrow is the only directional glyph and is mirrored in RTL.
+ */
+interface Tile {
+  href: string;
+  title: string;
+  text?: string;
+  icon: 'sprout' | 'link' | 'bars';
+}
+interface Props {
+  heading: string;
+  tiles: Tile[];
+  id?: string;
+}
+const { heading, tiles, id = 'intent' } = Astro.props;
+---
+
+<section class="container section intent" aria-labelledby={`${id}-heading`} id={id}>
+  <h2 id={`${id}-heading`} class="section__heading">{heading}</h2>
+  <ul class="intent__list">
+    {
+      tiles.map((tile) => (
+        <li>
+          <a class="tile" href={tile.href}>
+            <svg class="tile__icon" viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              {tile.icon === 'sprout' && (
+                <>
+                  <path d="M12 21v-9" />
+                  <path d="M12 13c0-4 3-7 7-7 0 4-3 7-7 7z" />
+                  <path d="M12 16c0-3-2.5-5.5-6-5.5 0 3 2.5 5.5 6 5.5z" />
+                </>
+              )}
+              {tile.icon === 'link' && (
+                <>
+                  <circle cx="8.5" cy="12" r="5" />
+                  <circle cx="15.5" cy="12" r="5" />
+                </>
+              )}
+              {tile.icon === 'bars' && (
+                <>
+                  <path d="M4 20h16" />
+                  <path d="M7 20v-7" />
+                  <path d="M12 20V5" />
+                  <path d="M17 20v-10" />
+                </>
+              )}
+            </svg>
+            <span class="tile__title">{tile.title}</span>
+            {tile.text && <span class="tile__text">{tile.text}</span>}
+            <svg class="tile__arrow" viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <path d="M5 12h14" />
+              <path d="M13 6l6 6-6 6" />
+            </svg>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<style>
+  .intent__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+    gap: var(--space-m);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .tile {
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    gap: var(--space-2xs);
+    block-size: 100%;
+    padding: var(--space-m);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    color: var(--color-text);
+    text-decoration: none;
+    transition:
+      transform var(--transition),
+      background-color var(--transition);
+  }
+  .tile:hover {
+    transform: translateY(-3px);
+  }
+  .tile__icon {
+    inline-size: 2.5rem;
+    block-size: 2.5rem;
+  }
+  .tile__title {
+    font-family: var(--font-heading);
+    font-size: var(--step-2);
+    line-height: var(--leading-heading);
+  }
+  .tile__text {
+    font-size: var(--step-0);
+  }
+  .tile__arrow {
+    justify-self: end;
+    inline-size: 1.75rem;
+    block-size: 1.75rem;
+    margin-block-start: var(--space-2xs);
+  }
+  :global([dir='rtl']) .tile__arrow {
+    transform: scaleX(-1);
+  }
+
+  /* Three distinct treatments (also distinct in shape of the start edge, not just colour). */
+  li:nth-child(1) .tile {
+    background: var(--color-strong);
+    border-color: var(--color-strong);
+    color: var(--color-on-strong);
+  }
+  li:nth-child(2) .tile {
+    background: var(--color-surface);
+    border-style: dashed;
+  }
+  li:nth-child(3) .tile {
+    background: var(--color-bg);
+    border-inline-start-width: 0.5rem;
+  }
+  .tile:focus-visible {
+    outline-offset: 4px;
+  }
+</style>

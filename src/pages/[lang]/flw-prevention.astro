@@ -1,16 +1,244 @@
 ---
-// Route: /{lang}/flw-prevention/  (en + he). Stage 1 stub: replaced by real content in a later stage.
+// Route: /{lang}/flw-prevention/  (en + he). The scale of FLW, how prevention works, next step for food businesses.
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import StubPage from '../../components/StubPage.astro';
-import { langStaticPaths, type Lang } from '../../i18n';
+import PageHeading from '../../components/PageHeading.astro';
+import Cite from '../../components/Cite.astro';
+import StatPlaceholder from '../../components/StatPlaceholder.astro';
+import SupplyChain from '../../components/SupplyChain.astro';
+import InfographicSlot from '../../components/InfographicSlot.astro';
+import PlaceholderMark from '../../components/PlaceholderMark.astro';
+import { langStaticPaths, getDictionary, type Lang } from '../../i18n';
+import { buildMailto } from '../../lib/mailto';
+import { stripPlaceholderMarkup } from '../../lib/placeholder';
 
 export function getStaticPaths() {
   return langStaticPaths();
 }
 
 const lang = Astro.params.lang as Lang;
+const dict = getDictionary(lang);
+const page = dict.pages.flwPrevention;
+const { scale, process: proc, cta } = dict.prevention;
+const mailHref = buildMailto({ subject: cta.mailSubject, body: cta.mailBody });
+
+const cards = [
+  { key: 'global', stat: 'stat-global-estimate' },
+  { key: 'stage', stat: 'stat-supply-chain-stage' },
+  { key: 'business', stat: 'stat-business-level' },
+  { key: 'impact', stat: 'stat-environmental-impact' },
+] as const;
+const steps = [
+  { key: 'measure', cite: 'c-prevention-process-2' },
+  { key: 'understand' },
+  { key: 'act' },
+  { key: 'check' },
+] as const;
 ---
 
 <BaseLayout lang={lang} routeId="flwPrevention">
-  <StubPage lang={lang} routeId="flwPrevention" />
+  <PageHeading title={page.title} lead={page.lead} />
+
+  <!-- 1. The scale of food loss and waste -->
+  <section class="container section" id="scale" aria-labelledby="scale-heading">
+    <h2 id="scale-heading" class="section__heading">{scale.heading}</h2>
+    <p>{scale.intro}<Cite id="c-prevention-scale-1" lang={lang} /></p>
+
+    <h3>{scale.termsHeading}</h3>
+    <dl class="terms">
+      <div>
+        <dt>{scale.loss.term}</dt>
+        <dd>{scale.loss.text}</dd>
+      </div>
+      <div>
+        <dt>{scale.waste.term}</dt>
+        <dd>{scale.waste.text}</dd>
+      </div>
+    </dl>
+    <p>{scale.termsNote}<Cite id="c-prevention-scale-2" lang={lang} /></p>
+    <SupplyChain lang={lang} />
+
+    <h3>{scale.readHeading}</h3>
+    <p>{scale.readIntro}</p>
+    <ul class="cards">
+      {
+        cards.map((c) => (
+          <li class="card">
+            <h4>{scale.cards[c.key].title}</h4>
+            <p>{scale.cards[c.key].text}</p>
+            <p class="card__figure">
+              <StatPlaceholder id={c.stat} lang={lang} />
+            </p>
+          </li>
+        ))
+      }
+    </ul>
+
+    <h3>{scale.measuredHeading}</h3>
+    <p>{scale.measuredIntro}<Cite id="c-prevention-scale-3" lang={lang} /></p>
+    <dl class="terms terms--three">
+      <div>
+        <dt>{scale.measured.measured.term}</dt>
+        <dd>{scale.measured.measured.text}</dd>
+      </div>
+      <div>
+        <dt>{scale.measured.estimated.term}</dt>
+        <dd>{scale.measured.estimated.text}</dd>
+      </div>
+      <div>
+        <dt>{scale.measured.projected.term}</dt>
+        <dd>{scale.measured.projected.text}</dd>
+      </div>
+    </dl>
+    <p class="closing">{scale.closing}</p>
+  </section>
+
+  <!-- 2. How prevention works -->
+  <section class="container section" id="prevention-process" aria-labelledby="process-heading">
+    <h2 id="process-heading" class="section__heading">{proc.heading}</h2>
+    <p>{proc.intro}<Cite id="c-prevention-process-1" lang={lang} /></p>
+    <p class="note">{proc.generalNote}</p>
+
+    <ol class="steps" aria-label={proc.stepsLabel}>
+      {
+        steps.map((s) => (
+          <li class="step">
+            <h3>{proc.steps[s.key].title}</h3>
+            <p>
+              {proc.steps[s.key].text}
+              {'cite' in s && <Cite id={s.cite} lang={lang} />}
+            </p>
+          </li>
+        ))
+      }
+    </ol>
+
+    <InfographicSlot lang={lang} />
+
+    <p class="daphi-note"><PlaceholderMark lang={lang} /> {stripPlaceholderMarkup(proc.daphiPlaceholder)}</p>
+  </section>
+
+  <!-- Next step for food businesses -->
+  <section class="container section" id="work-with-us" aria-labelledby="cta-heading">
+    <div class="cta">
+      <h2 id="cta-heading" class="cta__heading">{cta.heading}</h2>
+      <p>{cta.text}</p>
+      <p class="note">{cta.note}</p>
+      <a class="button" href={mailHref}>{cta.link}</a>
+    </div>
+  </section>
 </BaseLayout>
+
+<style>
+  .terms {
+    display: grid;
+    gap: var(--space-s);
+    margin: 0 0 var(--space-s);
+  }
+  .terms > div {
+    padding: var(--space-s) var(--space-m);
+    border-inline-start: 0.5rem solid var(--color-accent);
+    background: var(--color-surface);
+    border-radius: var(--radius-s);
+  }
+  .terms dt {
+    font-weight: 700;
+  }
+  .terms dd {
+    margin: 0;
+  }
+  .cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr));
+    gap: var(--space-m);
+    margin: 0 0 var(--space-l);
+    padding: 0;
+    list-style: none;
+  }
+  .card {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-m);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-m);
+  }
+  .card h4 {
+    font-size: var(--step-1);
+  }
+  .card__figure {
+    margin-block: auto 0;
+    padding-block-start: var(--space-xs);
+    border-block-start: var(--border-width) dashed var(--color-border);
+    font-size: var(--step--1);
+  }
+  .closing {
+    margin-block-start: var(--space-m);
+    font-size: var(--step-1);
+  }
+  .note {
+    font-size: var(--step--1);
+    color: var(--color-accent-text);
+  }
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+    gap: var(--space-m);
+    margin: var(--space-m) 0 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: step;
+  }
+  .step {
+    counter-increment: step;
+    padding: var(--space-m);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-m);
+  }
+  .step h3::before {
+    content: counter(step);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    inline-size: 2rem;
+    block-size: 2rem;
+    margin-inline-end: var(--space-2xs);
+    border-radius: 50%;
+    background: var(--color-strong);
+    color: var(--color-on-strong);
+    font-size: var(--step-0);
+  }
+  .daphi-note {
+    font-size: var(--step--1);
+  }
+  .cta {
+    padding: var(--space-l);
+    border-radius: var(--radius-m);
+    background: var(--color-strong);
+    color: var(--color-on-strong);
+  }
+  .cta__heading {
+    color: var(--color-on-strong);
+  }
+  .cta .note {
+    color: var(--color-on-strong);
+  }
+  .cta .button {
+    background: var(--color-on-strong);
+    color: var(--color-strong);
+    border-color: var(--color-on-strong);
+  }
+  .cta .button:hover {
+    background: var(--color-strong);
+    color: var(--color-on-strong);
+  }
+  .cta .button:focus-visible {
+    outline-color: var(--color-on-strong);
+  }
+  @media (min-width: 48em) {
+    .terms:not(.terms--three) {
+      grid-template-columns: 1fr 1fr;
+    }
+    .terms--three {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

@@ -3,10 +3,8 @@
 Bilingual (English / Hebrew, LTR / RTL) informational website for **Daphi**, a nonprofit working to eliminate food loss and waste (FLW).
 Built with [Astro](https://astro.build) as a fully static site, deployable on Cloudflare.
 
-> **Status: Stage 2 of 7 (citation system and Resources page).** The site shell, routing, localization, header/footer, design tokens,
-> seven pages per language, and the complete citation system (reference registry, citation markers with popovers, backlinks, Resources
-> page, validators) exist. Real page content arrives in later stages (see `HANDOFF.md`). This README grows with each stage;
-> sections marked *(later stage)* are not written yet.
+> **Status: Stage 3 of 7 (Homepage and FLW Prevention).** Everything from Stages 1-2 plus the complete Home and FLW Prevention pages
+> in both languages. Partnerships, Data, About and Acknowledgments are still stubs (see `HANDOFF.md`). This README grows with each stage.
 
 ## Requirements
 
@@ -22,7 +20,8 @@ Built with [Astro](https://astro.build) as a fully static site, deployable on Cl
 | `npm run build` | Production build to `dist/`, then the reference validation and the route/link check |
 | `npm run preview` | Serve the built `dist/` locally |
 | `npm run check` | Astro/TypeScript type check |
-| `npm run validate` | Contrast + mailto tests + reference-validator tests + reference validation + route/link check (run `npm run build` first) |
+| `npm run validate` | Contrast + mailto tests + reference-validator tests + reference validation + route/link check + figure check (run `npm run build` first) |
+| `npm run check:figures` | Fails if any digit (a statistic) appears in the visible text of the built pages; citation numbers and the e-mail address are exempt |
 | `npm run validate:refs` | Reference/citation validation: registry data, plus the built pages if `dist/` exists (fails the build on errors) |
 | `npm run test:refs` | Negative tests that prove the validator fails on broken data/markup (31 cases) |
 | `npm run list:placeholders` | Lists every placeholder still on the site (`-- --strict` exits 1 if any remain) |
@@ -83,11 +82,11 @@ How it fits together
 - A **reference** has a permanent `id` (e.g. `flw-global-overview-01`), a `status` (`placeholder` | `needs-verification` | `verified`), and
   optional bibliographic fields (organization, year, publisher, DOI, URL, locator). Empty fields are simply not rendered. Text fields can be a
   string or `{ en, he }`.
-- A **citation instance** is one marker in one place: `{ id: 'c-home-demo-1', ref: '<reference id>', page: 'home', section: 'demo' }`.
+- A **citation instance** is one marker in one place: `{ id: 'c-home-hero-1', ref: '<reference id>', page: 'home', section: 'hero' }`.
   One reference can have any number of instances (repeated citation, several pages).
 - The **number** shown in `[1]` is the reference's position in `references.mjs` (first record = 1), the same on every page. Identity is the
   `id`, never the number or the title, so re-ordering or replacing a source never breaks a marker or backlink.
-- **Marker** (`<Cite id="c-home-demo-1" lang={lang} />`): an anchor to `/{lang}/resources/#ref-<reference id>`. This works with no JavaScript.
+- **Marker** (`<Cite id="c-home-hero-1" lang={lang} />`): an anchor to `/{lang}/resources/#ref-<reference id>`. This works with no JavaScript.
   With JavaScript it adds a popover (title, organization/year when known, status, "View full reference" link) on hover, keyboard focus or tap;
   Escape closes it; on touch screens the first tap opens the popover and the second follows the link. The popover is clamped inside the viewport
   and works in RTL. Its text is also available through `aria-describedby`.
@@ -124,6 +123,21 @@ numbers unchanged; inserting in the middle renumbers the markers after it.
 `src/config/site.config.mjs` holds: site URL (**unset**), contact email, brand-asset paths, future-platform Google Doc URL (**unset**),
 application gateway state, and `showPlaceholderMarkers` (see Placeholders). Design tokens (colours, fonts, type scale, spacing) are in
 `src/styles/tokens.css`.
+
+## Home, FLW Prevention and the sensor content (Stage 3)
+
+- **Home** (`src/pages/[lang]/index.astro`): hero (exact heading "We prevent food waste." + cited intro), `IntentTiles` ("I want to:"),
+  `AppGateway` ("Coming soon"), `SensorSection` (information first, funding appeal last).
+- **Intent tile destinations**: FLW Prevention; `/{lang}/partnerships/#working-with-daphi`; Data. Fragment ids come from `SECTION_IDS` in `src/config/routes.mjs`.
+  The Partnerships and Data stubs already render those anchors so the links resolve until Stage 4 builds the sections.
+- **Sensor content** is one shared source, `src/data/sensor.mjs` (typed access `src/lib/sensor.ts`): confirmed paragraphs, placeholder details
+  (purpose, technical approach, intended application, stage), and both funding appeals (`funding.home` is used on Home, `funding.about` is ready for About in Stage 5).
+  `FundingCta.astro` renders either. To fill a detail: edit the text, drop `[PLACEHOLDER]`, set `status: 'confirmed'`. Optional image: `public/assets/brand/sensor-project.*`.
+- **Application gateway**: `siteConfig.app` in `src/config/site.config.mjs`. It stays "Coming soon" (email contact only) until `state: 'available'` **and** an `https://` `url` are both set.
+- **FLW Prevention** (`src/pages/[lang]/flw-prevention.astro`): sections `#scale`, `#prevention-process`, `#work-with-us`. Page copy is in the `prevention` block of `src/i18n/en.ts` / `he.ts`.
+  No figures are published: each place a number would go renders a `StatPlaceholder` (records in `src/data/stat-placeholders.mjs`), and `npm run check:figures` enforces it.
+- **Infographic slot**: put the file at `public/assets/brand/flw-prevention-infographic.(svg|png|webp|jpg)`; it replaces the placeholder block automatically. Update `prevention.process.infographic.alt` in both dictionaries to describe it.
+- **Business next step**: a mailto link (subject/body in the dictionaries). No form, no booking, no guarantee.
 
 ## Mailto links
 

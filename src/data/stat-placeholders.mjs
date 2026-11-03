@@ -28,13 +28,43 @@
 /** @type {StatPlaceholder[]} */
 export const statPlaceholders = [
   {
-    id: 'stat-demo-global-estimate',
-    cite: 'c-prevention-demo-stat-1',
+    id: 'stat-global-estimate',
+    cite: 'c-prevention-scale-stat-1',
     page: 'flwPrevention',
-    section: 'demo',
+    section: 'scale',
     description: {
       en: '[STAT PLACEHOLDER: global estimate of food lost or wasted; specify year, scope, and whether measured or estimated]',
       he: '[STAT PLACEHOLDER: הערכה גלובלית לכמות המזון שאבדה או בוזבזה; יש לציין שנה, היקף והאם הנתון נמדד או מוערך]',
+    },
+  },
+  {
+    id: 'stat-supply-chain-stage',
+    cite: 'c-prevention-scale-stat-2',
+    page: 'flwPrevention',
+    section: 'scale',
+    description: {
+      en: '[STAT PLACEHOLDER: estimate of food lost at a named supply-chain stage; specify the stage, region, year and the definition of loss used]',
+      he: '[STAT PLACEHOLDER: הערכה לכמות המזון שאבדה בשלב מסוים בשרשרת האספקה; יש לציין את השלב, האזור, השנה וההגדרה של אובדן שבה נעשה שימוש]',
+    },
+  },
+  {
+    id: 'stat-business-level',
+    cite: 'c-prevention-scale-stat-3',
+    page: 'flwPrevention',
+    section: 'scale',
+    description: {
+      en: '[STAT PLACEHOLDER: food waste in food businesses of a named sector; specify sector, region, year and method, and keep it separate from consumer-level waste]',
+      he: '[STAT PLACEHOLDER: בזבוז מזון בעסקי מזון בענף מסוים; יש לציין ענף, אזור, שנה ושיטה, ולהפריד זאת מבזבוז ברמת הצרכן]',
+    },
+  },
+  {
+    id: 'stat-environmental-impact',
+    cite: 'c-prevention-scale-stat-4',
+    page: 'flwPrevention',
+    section: 'scale',
+    description: {
+      en: '[STAT PLACEHOLDER: environmental impact attributed to food loss and waste; specify the indicator, scope, year, method and uncertainty]',
+      he: '[STAT PLACEHOLDER: השפעה סביבתית המיוחסת לאובדן ובזבוז מזון; יש לציין את המדד, ההיקף, השנה, השיטה ורמת אי־הוודאות]',
     },
   },
 ];

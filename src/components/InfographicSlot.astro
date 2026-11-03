@@ -1,0 +1,71 @@
+---
+/**
+ * Slot for the FLW-prevention infographic that Daphi will supply.
+ * Drop the file at public/assets/brand/flw-prevention-infographic.(svg|png|webp|jpg|jpeg): the build-time
+ * check (resolveBrandAsset) finds it and the image replaces the placeholder block automatically.
+ * Path is configurable in site.config.mjs (assets.preventionInfographic). Nothing else on the page changes.
+ * Update `prevention.infographic.alt` in the dictionaries so it describes the real image.
+ */
+import PlaceholderMark from './PlaceholderMark.astro';
+import { siteConfig } from '../config/site.config.mjs';
+import { resolveBrandAsset } from '../lib/brand';
+import { stripPlaceholderMarkup } from '../lib/placeholder';
+import { getDictionary, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = getDictionary(lang).prevention.process.infographic;
+const image = resolveBrandAsset(siteConfig.assets.preventionInfographic);
+---
+
+<figure class="infographic" id="infographic" data-infographic={image ? 'image' : 'placeholder'}>
+  {
+    image ? (
+      <img src={image.src} width={image.width} height={image.height} alt={d.alt} loading="lazy" decoding="async" />
+    ) : (
+      <div class="infographic__placeholder" role="img" aria-label={d.placeholderTitle}>
+        <PlaceholderMark lang={lang} />
+        <p class="infographic__title">{d.placeholderTitle}</p>
+        <p class="infographic__text">{stripPlaceholderMarkup(d.placeholderText)}</p>
+      </div>
+    )
+  }
+  <figcaption>{d.caption}</figcaption>
+</figure>
+
+<style>
+  .infographic {
+    margin: var(--space-l) 0;
+  }
+  .infographic img {
+    display: block;
+    margin-inline: auto;
+  }
+  .infographic__placeholder {
+    display: grid;
+    justify-items: start;
+    gap: var(--space-2xs);
+    min-block-size: 14rem;
+    align-content: center;
+    padding: var(--space-l);
+    border: var(--border-width) dashed var(--color-border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+  .infographic__title {
+    margin: 0;
+    font-family: var(--font-heading);
+    font-size: var(--step-2);
+  }
+  .infographic__text {
+    margin: 0;
+    font-size: var(--step--1);
+  }
+  figcaption {
+    margin-block-start: var(--space-2xs);
+    font-size: var(--step--1);
+    color: var(--color-accent-text);
+  }
+</style>

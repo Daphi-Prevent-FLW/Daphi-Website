@@ -58,7 +58,6 @@ Mixed-language handling: the email address is wrapped in `<bdi dir="ltr">`; keep
 | --- | --- | --- |
 | `references.mjs` titles (`flw-*-01`) | סטטיסטיקות גלובליות על אובדן ובזבוז מזון; אובדן מזון לאורך שרשראות האספקה; בזבוז מזון בעסקי מזון; השפעות סביבתיות של בזבוז מזון; שיטות למדידת אובדן ובזבוז מזון; גישות למניעת בזבוז מזון | Editorial placeholders only; confirm terminology (e.g. שרשראות האספקה vs שרשרת האספקה; "ברמת העסק"). |
 | `stat-placeholders.mjs` description | הערכה גלובלית לכמות המזון שאבדה או בוזבזה; יש לציין שנה, היקף והאם הנתון נמדד או מוערך | Measured vs estimated: נמדד / מוערך. |
-| `demo.*` | Demonstration sentences about loss in businesses, waste in households, supply chain stages | Temporary; removed in Stage 3. |
 
 ### C. Phrases whose tone is uncertain
 | Where (key) | Current Hebrew | Note |
@@ -73,4 +72,38 @@ Mixed-language handling: the email address is wrapped in `<bdi dir="ltr">`; keep
 | --- | --- |
 | Reference titles `[PLACEHOLDER] …` | The Latin prefix `[PLACEHOLDER]` is kept in Hebrew titles on purpose (it is the machine-findable source marker). In RTL text it renders at the start of the title; confirm it reads acceptably or whether it should be hidden in Hebrew when the badge is shown. |
 | Citation numbers `[1]` | Wrapped in `<bdi dir="ltr">` so the brackets do not flip in RTL. A visually hidden word (מקור) is read before the number by screen readers. |
-| `refs.sections.demo` | הדגמת ציטוטים (temporary). Every new cited section needs a Hebrew label here. |
+| `refs.sections.*` | Every new cited section needs a Hebrew label here (Stage 3: hero, scale, process). |
+
+## Stage 3 entries (Home, FLW Prevention, sensor content)
+
+### A. Terms with more than one reasonable translation
+| Where (key) | Current Hebrew | English | Alternatives / question |
+| --- | --- | --- | --- |
+| `home.app.*` | אפליקציה | application | יישום, תוכנה |
+| `home.intent.tiles.opportunities.title` | לפתח הזדמנויות עסקיות חדשות | Develop new business opportunities | The English label was kept as supplied; the added line below it clarifies who it is for. |
+| `prevention.scale.measured.projected.term` | צפוי (תחזית) | Projected | תחזית, הקרנה |
+| `prevention.scale.loss/waste` | אובדן מזון / בזבוז מזון | Food loss / food waste | Confirm against Israeli research and policy usage. |
+| `prevention.process.steps.*` | למדוד / להבין את הסיבות / לפעול על הסיבות / לבדוק ולהמשיך | Measure / Understand / Act / Check | Imperative infinitives chosen for a neutral register. |
+| `sensor.mjs` `details[*].label` | מטרה, גישה טכנית, יישום מיועד, שלב הפיתוח | Purpose, Technical approach, Intended application, Development stage | |
+
+### B. Scientific terms needing expert check
+| Where | Question |
+| --- | --- |
+| `prevention.scale.chain.*` | Stage names (חוות וקציר, אחסון והובלה, עיבוד וייצור, סיטונאות וקמעונאות, שירותי מזון, משקי בית) and the "usually loss / depends / usually waste" tags: confirm the terminology and the classification. |
+| `prevention.scale.measured.*` | נמדד / מוערך / צפוי: confirm the definitions read correctly to a researcher. |
+| `stat-placeholders.mjs` (4 records) | Descriptions of the figures still to be supplied. |
+
+### C. Phrases whose tone is uncertain
+| Where | Note |
+| --- | --- |
+| `home.hero.*` | One long paragraph; check flow, especially "וזה משפיע על הסביבה" and "והטיפול בכל אחד מהם שונה". |
+| `prevention.cta.*` | Plural-you register. The prefilled mail body uses the slash form "מעוניין/ת", "מתעניין/ת"; consider whether a neutral phrasing is preferred. |
+| `sensor.mjs` funding copy | "עזרו לנו לקדם את הפיתוח" / "עזרו לנו לפתח את החיישן" and the CTA labels. |
+| `prevention.process.intro` | "בדרך כלל רואים בה אפשרות עדיפה על פני הצלה או מחזור" (the usual preference for prevention over recovery or recycling). |
+
+### D. Mixed-direction / awkward strings
+| Where | Note |
+| --- | --- |
+| `[PLACEHOLDER]` prefix | Stays Latin in source; stripped when rendered (a Hebrew badge is shown). |
+| `prevention.process.infographic.placeholderText` | Contains a Latin file path inside Hebrew text; check it renders readably in RTL. |
+| FLW abbreviation | Deliberately not used in Hebrew body text (the Hebrew home tile says "נתוני אובדן ובזבוז מזון מפורטים"). |

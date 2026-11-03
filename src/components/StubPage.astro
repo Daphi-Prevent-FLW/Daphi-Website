@@ -1,11 +1,12 @@
 ---
 /**
- * Stage 1 stub body used by all seven pages: heading + lead + a clearly marked placeholder notice.
- * Each page is replaced by its real content in later stages (this component is then removed).
+ * Stub body used by the pages that do not have real content yet: heading + lead + a clearly marked
+ * placeholder notice. Removed from each page as it gets its real content.
+ * `sections` renders anchors for in-page sections that OTHER pages already link to (stable ids from
+ * SECTION_IDS), so those links resolve until the section itself is built.
  */
 import PageHeading from './PageHeading.astro';
 import PlaceholderMark from './PlaceholderMark.astro';
-import CitationDemo from './CitationDemo.astro';
 import { stripPlaceholderMarkup } from '../lib/placeholder';
 import { getDictionary, type Lang } from '../i18n';
 import type { RouteId } from '../lib/routes';
@@ -13,8 +14,9 @@ import type { RouteId } from '../lib/routes';
 interface Props {
   lang: Lang;
   routeId: RouteId;
+  sections?: { id: string; heading: string }[];
 }
-const { lang, routeId } = Astro.props;
+const { lang, routeId, sections = [] } = Astro.props;
 const dict = getDictionary(lang);
 const page = dict.pages[routeId];
 ---
@@ -26,4 +28,14 @@ const page = dict.pages[routeId];
     {stripPlaceholderMarkup(dict.stub.notice)}
   </p>
 </section>
-{(routeId === 'home' || routeId === 'flwPrevention') && <CitationDemo lang={lang} routeId={routeId} />}
+{
+  sections.map((s) => (
+    <section class="container stub" id={s.id} aria-labelledby={`${s.id}-heading`}>
+      <h2 id={`${s.id}-heading`}>{s.heading}</h2>
+      <p>
+        <PlaceholderMark lang={lang} />
+        {stripPlaceholderMarkup(dict.stub.notice)}
+      </p>
+    </section>
+  ))
+}

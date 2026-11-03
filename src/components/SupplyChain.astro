@@ -1,0 +1,83 @@
+---
+/**
+ * Simplified strip of the supply-chain stages, showing which stages are usually called "loss", which
+ * "waste", and which depend on the definition. Original diagram (HTML/CSS). The kind is stated in
+ * text on every stage, and also by the border style (solid / dashed / dotted), so colour is not needed.
+ * Direction-aware: the strip follows the page direction (farm at the inline start).
+ */
+import { getDictionary, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = getDictionary(lang).prevention.scale.chain;
+const stages = [
+  { key: 'farms', kind: 'loss' },
+  { key: 'storage', kind: 'loss' },
+  { key: 'processing', kind: 'loss' },
+  { key: 'retail', kind: 'boundary' },
+  { key: 'foodService', kind: 'waste' },
+  { key: 'households', kind: 'waste' },
+] as const;
+---
+
+<figure class="chain-figure">
+  <ol class="chain" aria-label={d.label}>
+    {
+      stages.map((s) => (
+        <li class={`chain__stage chain__stage--${s.kind}`}>
+          <span class="chain__name">{d.stages[s.key]}</span>
+          <span class="chain__tag">{d.tags[s.kind]}</span>
+        </li>
+      ))
+    }
+  </ol>
+  <figcaption>{d.caption}</figcaption>
+</figure>
+
+<style>
+  .chain-figure {
+    margin: var(--space-m) 0;
+  }
+  .chain {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .chain__stage {
+    display: grid;
+    gap: var(--space-3xs);
+    align-content: start;
+    padding: var(--space-xs) var(--space-s);
+    border-block-start: 0.5rem solid var(--color-accent);
+    background: var(--color-surface);
+    border-radius: 0 0 var(--radius-s) var(--radius-s);
+  }
+  .chain__stage--boundary {
+    border-block-start-style: dashed;
+  }
+  .chain__stage--waste {
+    border-block-start-style: dotted;
+  }
+  .chain__name {
+    font-weight: 700;
+  }
+  .chain__tag {
+    font-size: var(--step--1);
+    color: var(--color-accent-text);
+  }
+  figcaption {
+    margin-block-start: var(--space-xs);
+    font-size: var(--step--1);
+    color: var(--color-accent-text);
+  }
+  @media (min-width: 48em) {
+    .chain {
+      grid-template-columns: repeat(6, minmax(0, 1fr));
+    }
+  }
+</style>

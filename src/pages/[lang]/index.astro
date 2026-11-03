@@ -1,16 +1,91 @@
 ---
-// Route: /{lang}/  (en + he). Stage 1 stub: replaced by real content in a later stage.
+// Route: /{lang}/  (en + he). Home: hero, intent tiles, app gateway, sensor project.
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import StubPage from '../../components/StubPage.astro';
-import { langStaticPaths, type Lang } from '../../i18n';
+import Cite from '../../components/Cite.astro';
+import IntentTiles from '../../components/IntentTiles.astro';
+import AppGateway from '../../components/AppGateway.astro';
+import SensorSection from '../../components/SensorSection.astro';
+import { langStaticPaths, getDictionary, type Lang } from '../../i18n';
+import { routePath } from '../../lib/routes';
+import { SECTION_IDS } from '../../config/routes.mjs';
 
 export function getStaticPaths() {
   return langStaticPaths();
 }
 
 const lang = Astro.params.lang as Lang;
+const dict = getDictionary(lang);
+const { hero, intent } = dict.home;
+const tiles = [
+  { icon: 'sprout', href: routePath(lang, 'flwPrevention'), ...intent.tiles.reduce },
+  { icon: 'link', href: routePath(lang, 'partnerships', SECTION_IDS.partnershipsWorkingWithDaphi), ...intent.tiles.opportunities },
+  { icon: 'bars', href: routePath(lang, 'data'), ...intent.tiles.data },
+] as const;
 ---
 
 <BaseLayout lang={lang} routeId="home">
-  <StubPage lang={lang} routeId="home" />
+  <header class="hero">
+    <div class="container hero__inner">
+      <div class="hero__text">
+        <h1>{dict.pages.home.title}</h1>
+        <p class="hero__intro">
+          {hero.a}<Cite id="c-home-hero-1" lang={lang} />
+          {hero.b}<Cite id="c-home-hero-2" lang={lang} />
+          {hero.c}<Cite id="c-home-hero-3" lang={lang} />
+          {hero.d}
+        </p>
+      </div>
+      <!-- Decorative: a loop of arcs suggesting circularity. No meaning, hidden from assistive technology. -->
+      <svg class="hero__motif" viewBox="0 0 200 200" width="200" height="200" fill="none" stroke="currentColor" stroke-width="6" stroke-linecap="round" aria-hidden="true" focusable="false">
+        <path d="M100 20a80 80 0 0 1 69 40" />
+        <path d="M180 100a80 80 0 0 1-40 69" />
+        <path d="M100 180a80 80 0 0 1-69-40" />
+        <path d="M20 100a80 80 0 0 1 40-69" />
+        <circle cx="100" cy="100" r="22" stroke-width="4" />
+      </svg>
+    </div>
+  </header>
+
+  <IntentTiles heading={intent.heading} tiles={tiles as any} />
+  <AppGateway lang={lang} />
+  <SensorSection lang={lang} />
 </BaseLayout>
+
+<style>
+  .hero {
+    padding-block: var(--space-xl) var(--space-l);
+  }
+  .hero__inner {
+    display: grid;
+    gap: var(--space-l);
+    align-items: center;
+  }
+  h1::after {
+    content: '';
+    display: block;
+    inline-size: 4rem;
+    block-size: 6px;
+    margin-block-start: var(--space-s);
+    background: var(--color-accent);
+    border-radius: 3px;
+  }
+  .hero__intro {
+    margin-block-start: var(--space-m);
+    font-size: var(--step-1);
+    max-inline-size: 48ch;
+  }
+  .hero__motif {
+    display: none;
+    color: var(--color-accent);
+  }
+  @media (min-width: 52em) {
+    .hero__inner {
+      grid-template-columns: 1fr auto;
+    }
+    .hero__motif {
+      display: block;
+      inline-size: clamp(9rem, 20vw, 14rem);
+      block-size: auto;
+    }
+  }
+</style>

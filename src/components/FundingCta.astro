@@ -1,0 +1,45 @@
+---
+/**
+ * Sensor funding appeal (heading, copy and a mailto: button). One component, two uses:
+ *   kind="home"   ends the Home sensor section ("Support sensor development")
+ *   kind="about"  ends the About timeline, Stage 5 ("Discuss funding opportunities")
+ * All copy and mailto texts come from src/data/sensor.mjs. No form, no target, no donation mechanism.
+ */
+import { fundingContent, type FundingKind } from '../lib/sensor';
+import type { Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  kind: FundingKind;
+  /** Heading level (3 inside a section, 2 when it stands on its own). */
+  level?: 2 | 3;
+  id?: string;
+}
+const { lang, kind, level = 3, id = `sensor-funding-${kind}` } = Astro.props;
+const { heading, text, cta, href } = fundingContent(kind, lang);
+const Heading = `h${level}` as 'h2' | 'h3';
+---
+
+<div class="funding" id={id} aria-labelledby={`${id}-heading`} role="group">
+  <Heading id={`${id}-heading`} class="funding__heading">{heading}</Heading>
+  <p>{text}</p>
+  <a class="button" href={href}>{cta}</a>
+</div>
+
+<style>
+  .funding {
+    padding: var(--space-m);
+    border: var(--border-width) solid var(--color-border);
+    border-inline-start-width: 0.5rem;
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+  .funding__heading {
+    font-family: var(--font-body);
+    font-weight: 700;
+    font-size: var(--step-1);
+  }
+  .funding p {
+    margin-block-end: var(--space-s);
+  }
+</style>

@@ -1,0 +1,79 @@
+---
+/**
+ * Gateway to the future Daphi application. NOT deployed: by default shows a clear "Coming soon"
+ * message with an email contact. No login form, no dashboard, no launch button.
+ * Switch it on in src/config/site.config.mjs: app.state = 'available' AND app.url = 'https://...'
+ * (both are needed, so a half-finished configuration can never produce a dead launch button).
+ * Used on the Home page only (not on every page, by design).
+ */
+import { siteConfig } from '../config/site.config.mjs';
+import { buildMailto } from '../lib/mailto';
+import { getDictionary, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+}
+const { lang } = Astro.props;
+const d = getDictionary(lang).home.app;
+const available = siteConfig.app.state === 'available' && /^https:\/\//.test(siteConfig.app.url);
+const mailHref = buildMailto({ subject: d.mailSubject, body: d.mailBody });
+---
+
+<aside class="container app-gateway" aria-labelledby="app-gateway-heading" data-app-state={available ? 'available' : 'coming-soon'}>
+  <div class="app-gateway__inner">
+    {!available && <p class="app-gateway__badge">{d.badge}</p>}
+    <div class="app-gateway__body">
+      <h2 id="app-gateway-heading" class="app-gateway__heading">{available ? d.availableHeading : d.heading}</h2>
+      <p>{available ? d.availableText : d.text}</p>
+    </div>
+    {
+      available ? (
+        <a class="button" href={siteConfig.app.url} rel="noopener noreferrer">{d.availableLink}</a>
+      ) : (
+        <a class="app-gateway__link" href={mailHref}>{d.link}</a>
+      )
+    }
+  </div>
+</aside>
+
+<style>
+  .app-gateway {
+    padding-block: var(--space-m);
+  }
+  .app-gateway__inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-xs) var(--space-m);
+    padding: var(--space-s) var(--space-m);
+    border: var(--border-width) dashed var(--color-border);
+    border-radius: var(--radius-m);
+  }
+  .app-gateway__badge {
+    margin: 0;
+    padding: 0 var(--space-xs);
+    border: var(--border-width) solid var(--color-strong);
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: var(--step--1);
+    white-space: nowrap;
+  }
+  .app-gateway__body {
+    flex: 1 1 18rem;
+  }
+  .app-gateway__heading {
+    margin: 0;
+    font-family: var(--font-body);
+    font-size: var(--step-1);
+    font-weight: 700;
+  }
+  .app-gateway__body p {
+    margin: 0;
+  }
+  .app-gateway__link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--touch-target);
+    font-weight: 700;
+  }
+</style>
