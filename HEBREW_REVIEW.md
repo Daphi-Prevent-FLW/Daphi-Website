@@ -107,3 +107,32 @@ Mixed-language handling: the email address is wrapped in `<bdi dir="ltr">`; keep
 | `[PLACEHOLDER]` prefix | Stays Latin in source; stripped when rendered (a Hebrew badge is shown). |
 | `prevention.process.infographic.placeholderText` | Contains a Latin file path inside Hebrew text; check it renders readably in RTL. |
 | FLW abbreviation | Deliberately not used in Hebrew body text (the Hebrew home tile says "נתוני אובדן ובזבוז מזון מפורטים"). |
+
+## Stage 4 entries (Partnerships, Data)
+
+### A. Terms with more than one reasonable translation
+| Where (key) | Current Hebrew | English | Alternatives / question |
+| --- | --- | --- | --- |
+| `partnerships.intent.tiles.clients.title` | להשיג עוד לקוחות | Acquire more clients | להרחיב את מעגל הלקוחות |
+| `partnerships.intent.tiles.data.title` | לייצר הכנסה מנתוני אובדן ובזבוז מזון מפורטים שבידי | Monetize my granular FLW data | להפיק ערך כלכלי מ..., לממש את הערך של... |
+| `partnerships.working.roles.chefs/foodTech` | שפים מומחים / טכנולוגי מזון | Specialized chefs / food technologists | טכנולוגים של מזון |
+| `partnerships.working.rolesHeading` | נשמח לשמוע מ (followed by the list) | We would like to hear from | The dangling prefix מ before a list reads awkwardly; consider "נשמח לשמוע מ..." as a sentence |
+| `data.explore.status` | הפלטפורמה עדיין לא הושקה | The platform is not deployed yet | לא פועלת, לא זמינה |
+| `data.share.*` | חשיפה סטטיסטית; הכנסה פסיבית | statistical disclosure; passive income | Confirm "אמצעי חשיפה סטטיסטית" is the accepted term (statistical disclosure control: בקרת חשיפה סטטיסטית?) |
+| `data.explore.notify.label` | תודיעו לי כשהיא תהיה זמינה | Let me know when it's available | Imperative plural addressed to Daphi; check register |
+
+### B. Scientific terms needing expert check
+`data.share.explanation` and `data.share.caveat` (statistical disclosure measures, anonymity): confirm the statistical term and that the caveat is accurate.
+
+### C. Phrases whose tone is uncertain
+| Where | Note |
+| --- | --- |
+| `partnerships.working.note`, `data.measurement.note` | The "no guarantee" wording; check it is firm but not cold. |
+| Mail bodies (`*.mailBody`) | Slash forms (מעוניין/ת, מבקש/ת, משתמש/ת) as in Stage 3; consider neutral phrasing. |
+| `data.measurement.text` | "ואנחנו נחזור אליכם ונגיד אם אפשר לבצע מדידה" is a soft commitment to reply; confirm Daphi is comfortable with it (same in English). |
+
+### D. Mixed-direction / awkward strings
+| Where | Note |
+| --- | --- |
+| `data.explore.doc.missing` | Contains the Latin identifier `futurePlatformDocUrl` and a file path inside Hebrew text (editorial note, disappears once the URL is set). Check bidi order. |
+| Page `title` for the measurement heading | Long heading (copied from the required wording); check line breaks on phones. |

@@ -38,6 +38,17 @@ section(
   statPlaceholders.map((s) => `${s.id} (page ${s.page}, section ${s.section}, cites ${s.cite})`),
 );
 
+section(
+  'Configuration values still unset (src/config/site.config.mjs)',
+  [
+    ['siteUrl', siteConfig.siteUrl, 'production domain: no canonical URLs or sitemap until set'],
+    ['futurePlatformDocUrl', siteConfig.futurePlatformDocUrl, 'Data page shows an editorial placeholder instead of the "Read more about the future platform" link'],
+    ['app.url', siteConfig.app.url, 'application gateway stays on "Coming soon"'],
+  ]
+    .filter(([, value]) => !String(value ?? '').trim())
+    .map(([key, , effect]) => `${key}: ${effect}`),
+);
+
 const SKIP_FILES = new Set(['src/data/references.mjs', 'src/data/stat-placeholders.mjs', 'src/lib/placeholder.ts']);
 const MARK = /\[PLACEHOLDER\]|\[STAT PLACEHOLDER:|status:\s*['"]placeholder['"]/;
 const isComment = (line) => /^\s*(\*|\/\/|\/\*|<!--)/.test(line);

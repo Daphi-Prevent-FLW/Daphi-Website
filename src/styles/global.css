@@ -195,3 +195,15 @@ bdi,
   color: var(--color-text);
   text-decoration: none;
 }
+
+/* ----- Stage 4 ----- */
+
+/* Secondary call-to-action: outline version of .button (for links that lead to another page, not to a mail). */
+.button--secondary {
+  background: transparent;
+  color: var(--color-text);
+}
+.button--secondary:hover {
+  background: var(--color-strong);
+  color: var(--color-on-strong);
+}

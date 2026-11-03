@@ -6,16 +6,14 @@ Read this first when continuing in a new session (see the continuation protocol 
 - **Stage 1: Foundation and architecture**: completed 2026-10-18.
 - **Stage 2: Citation system and Resources page**: completed 2026-10-22.
 - **Stage 3: Homepage and FLW Prevention**: completed 2026-10-25.
+- **Stage 4: Partnerships and Data**: completed 2026-10-26.
 
 ## 2. Next stage
-- **Stage 4: Partnerships and Data.** Nothing from Stage 4 has been started (stages may be merged with 5).
-- Partially done work: none. Pointers for Stage 4:
-  - `partnerships.astro` and `data.astro` still render `StubPage`. The stub already renders the anchors other pages link to (`#working-with-daphi`, `#explore-data`, `#request-measurement`, `#share-data`, ids from `SECTION_IDS`);
-    keep those ids on the real sections and remove the `sections` prop and the `stub.sections` dictionary block when done.
-  - `IntentTiles.astro` is reusable for the two Partnerships tiles ("Acquire more clients" -> own section; "Monetize my granular FLW data" -> `/{lang}/data/#share-data`).
-  - Mailto texts for Stage 4 go in the dictionaries (see `prevention.cta` as the pattern) and are built with `buildMailto`.
-  - The Stage 4 internal link/fragment validation script is still to be written (`check-routes.mjs` already checks fragments of root-relative links).
-  - `check-no-figures.mjs` skips About/Acknowledgments only; Partnerships/Data must stay free of digits too (or extend its allow-list deliberately).
+- **Stage 5: About and Acknowledgments** (optionally merged with Stage 6). Nothing from Stage 5 has been started.
+  - `about.astro` and `acknowledgments.astro` still render `StubPage` (the `sections` prop is gone; remove `StubPage` and `dict.stub` when both are real).
+  - About reuses `<FundingCta kind="about" level={2}>` (`funding.about` in `src/data/sensor.mjs`) and the shared sensor content.
+  - `check-no-figures.mjs` skips About/Acknowledgments (timeline dates); extend the allow-list deliberately if other pages need digits.
+  - New cited sections need a key in `refs.sections` (EN + HE). New section ids other pages link to need entries in `SECTION_IDS` and `SECTION_PAGES`.
 
 ## 3. Key architectural decisions and file locations
 - **Astro 7.4, static output**, `trailingSlash: 'always'`, `build.format: 'directory'`. No Cloudflare adapter (static assets served from `dist/`).
@@ -25,7 +23,7 @@ Read this first when continuing in a new session (see the continuation protocol 
   Slugs are identical across languages, so the language switcher maps pages one-to-one.
 - i18n: `src/i18n/en.ts` (defines the `Dictionary` type), `src/i18n/he.ts` (must match), `src/i18n/index.ts` (`getDictionary`, `getDir`, `langStaticPaths`).
   Each page has `pages[routeId] = { title (h1), metaTitle, description, lead }`; nav labels in `nav`; shared UI strings in `ui`.
-- Pages: `src/pages/[lang]/{index,flw-prevention,partnerships,data,about,resources,acknowledgments}.astro` (currently render `StubPage`),
+- Pages: `src/pages/[lang]/{index,flw-prevention,partnerships,data,about,resources,acknowledgments}.astro` (Home, FLW Prevention, Partnerships, Data are real; About and Acknowledgments render `StubPage`),
   `src/pages/index.astro` (language entry), `src/pages/404.astro` (bilingual).
 - Layout/components: `src/layouts/BaseLayout.astro`; `src/components/` `Header`, `Footer`, `SeoHead`, `LanguageSwitcher`, `BrandLogo`, `EmailLink`,
   `PlaceholderMark`, `PageHeading`, `StubPage` (still used by Partnerships, Data, About, Acknowledgments; takes an optional `sections` prop that renders link-target anchors).
@@ -64,18 +62,31 @@ Read this first when continuing in a new session (see the continuation protocol 
 - **New script**: `scripts/check-no-figures.mjs` (`npm run check:figures`, part of `npm run validate`).
 - Display numbers are registry positions, so a page can show [1], [2], [4] (e.g. Home skips [3]); this is by design (same number everywhere).
 
-## 4. Commands run (Node 22.23.4 / npm 10.9, delivery environment)
+### Stage 4 additions
+- **Partnerships / Data pages** as described in the README section "Partnerships and Data (Stage 4)". Copy + mailtos: `partnerships` and `data` blocks in `src/i18n/{en,he}.ts`. `stub.sections` and `StubPage`'s `sections` prop were removed.
+- **`src/lib/external.ts`** `configuredHttpsUrl()`: the platform doc link renders only for a valid https URL; otherwise `li[data-action="platform-doc"][data-state="missing"]` shows a marked placeholder (no link).
+- **Link validator**: `scripts/check-links.mjs` (+ `lib/links-core.mjs` pure logic, `journeys.mjs`, `test-check-links.mjs` with 30 negative tests). Runs in `npm run build` and `npm run validate`.
+  `SECTION_PAGES` added to `src/config/routes.mjs`. `.button--secondary` added to `global.css`. `list-placeholders` now also reports unset config values.
+- No digits appear in Partnerships/Data copy (figure check passes without extending its allow-list).
+
+## 4. Commands run (Node 22.23.4 / npm 10.9, delivery environment; Stage 4 session)
 | Command | Result |
 | --- | --- |
 | `npm ci` (from the Stage 2 zip, before any change) and `npm run build` | passed (baseline) |
-| `npm run build` (astro build + validate-refs + route check) | passed: 16 pages |
-| `npm run check` (astro check) | passed: 0 errors, 0 warnings, 0 hints (54 files) |
-| `npm run validate` (contrast, mailto, 31 validator tests, refs, routes, figures) | passed |
+| `npm ci` + `npm run build` on the unmodified Stage 3 zip | passed (baseline) |
+| `npm run build` (astro build + validate-refs + route check + link check) | passed: 16 pages |
+| `npm run check` (astro check) | passed: 0 errors, 0 warnings, 0 hints (59 files) |
+| `npm run validate` (contrast, mailto, 31 ref tests, 30 link tests, refs, routes, links, figures) | passed |
+| Temporary `futurePlatformDocUrl = https://example.org/test-only` (reverted) + build | link rendered on EN and HE Data pages with `target=_blank rel="noopener noreferrer"`; link check passed; config restored to empty and rebuilt |
 | `npm run check:figures` | passed; also proven to fail when a figure ("30%") is injected into a built page |
 | `npm run list:placeholders` | runs; see output for the remaining items |
-| Playwright + Chromium (script kept outside the project) | Home and FLW Prevention, EN + HE, 1280 px and 375 px: no horizontal overflow, no console errors; screenshots inspected; citation popover opens on hover; tile destinations; Partnerships tile lands on `#working-with-daphi`; mailto links (EN/HE) read back correctly |
+| Playwright + Chromium, Stage 4 (script outside the project) | Partnerships and Data, EN + HE, 1280 px and 375 px: no horizontal overflow, no console errors; screenshots inspected; tile destinations and fragments; jump links; all four Data mailtos read back (subject/body, EN and HE); platform doc shows missing state; Tab/focus outline present |
+| Playwright + Chromium, Stage 3 | Home and FLW Prevention, EN + HE, 1280 px and 375 px: no horizontal overflow, no console errors; screenshots inspected; citation popover opens on hover; tile destinations; Partnerships tile lands on `#working-with-daphi`; mailto links (EN/HE) read back correctly |
 
 ## 5. Known issues and unverified items
+- **Stage 4 not verified**: keyboard walk-through beyond one Tab step, screen readers, Safari/Firefox, real touch devices; mail clients opening the mailto links (only the URL contents were read back). Hebrew copy of both pages is new and unreviewed (`HEBREW_REVIEW.md`, Stage 4 entries).
+- The Hebrew missing-doc placeholder contains a Latin identifier and path inside RTL text; bidi order looked acceptable in a screenshot but is flagged for review.
+- The link validator uses regex-based HTML parsing (tested, incl. unquoted attributes); it is not a full HTML parser.
 - **Browser checks (Stage 2)**: Chromium via Playwright was available in the Stage 2 session. It verified the citation system and looked at screenshots of the Resources and FLW Prevention
   pages in EN/HE (desktop, 375 px phone). **Still unverified in a real browser**: the mobile menu behaviour and focus handling, header wrapping near the 70em breakpoint with long Hebrew labels, Safari/Firefox,
   real touch devices (touch was emulated), screen-reader output (aria-describedby is in place but not tested with a screen reader).

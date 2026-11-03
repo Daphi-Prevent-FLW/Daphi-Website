@@ -32,7 +32,21 @@ export const ROUTES = /** @type {const} */ ([
  */
 export const SECTION_IDS = /** @type {const} */ ({
   partnershipsWorkingWithDaphi: 'working-with-daphi',
+  partnershipsDataCollaboration: 'data-collaboration',
   dataExplore: 'explore-data',
   dataMeasurement: 'request-measurement',
   dataShare: 'share-data',
+});
+
+/**
+ * Which page (route slug) each SECTION_IDS entry lives on. Used by scripts/check-links.mjs to prove that every
+ * stable section id exists, exactly once, on the right page in every language. Add an entry here whenever you
+ * add one to SECTION_IDS (the link checker fails if one is missing).
+ */
+export const SECTION_PAGES = /** @type {const} */ ({
+  partnershipsWorkingWithDaphi: 'partnerships',
+  partnershipsDataCollaboration: 'partnerships',
+  dataExplore: 'data',
+  dataMeasurement: 'data',
+  dataShare: 'data',
 });

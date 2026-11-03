@@ -49,13 +49,6 @@ const en = {
 
   stub: {
     notice: '[PLACEHOLDER] The content of this page will be added in a later build stage.',
-    /** Headings of sections other pages already link to (Stage 3); their content arrives in Stage 4. */
-    sections: {
-      workingWithDaphi: 'Working with Daphi',
-      exploreData: 'Explore FLW granular data',
-      requestMeasurement: 'Request FLW data measurement',
-      shareData: 'Share existing FLW data',
-    },
   },
 
   /** References, citation markers and the Resources page (Stage 2). */
@@ -237,6 +230,127 @@ const en = {
       mailSubject: 'Food business inquiry: preventing food loss and waste',
       mailBody:
         'Hello Daphi,\n\nI would like to explore how my food business can prevent food loss and waste.\n\nBusiness name and type:\nLocation:\nWhat we would like to achieve:\n\nThank you.',
+    },
+  },
+
+  /** Partnerships page (Stage 4). Mailto subjects/bodies sit next to the copy they belong to. */
+  partnerships: {
+    intent: {
+      heading: 'I want to:',
+      tiles: {
+        clients: {
+          title: 'Acquire more clients',
+          text: "For technology providers, consultants and other professionals who can help food businesses through Daphi's work.",
+        },
+        data: {
+          title: 'Monetize my granular FLW data',
+          text: 'For organizations that hold detailed food loss and waste data.',
+        },
+      },
+    },
+    working: {
+      heading: 'Working with Daphi',
+      intro:
+        'Preventing food loss and waste often takes more than one kind of help: technology, consulting, culinary and food-technology expertise, and more. Daphi collaborates with professionals and organizations who can provide value to food businesses.',
+      rolesHeading: 'We would like to hear from',
+      roles: {
+        technology: 'Technology providers',
+        consultants: 'Consultants',
+        chefs: 'Specialized chefs',
+        foodTech: 'Food technologists',
+        others: 'Other professionals and organizations who can help food businesses prevent food loss and waste',
+      },
+      rolesNote: 'Collaborators do not all play the same role, and the details are not fixed in advance.',
+      modelHeading: 'How a collaboration works',
+      modelIntro: 'These details have not been confirmed yet. They will be added here when they are.',
+      model: {
+        model: {
+          title: 'Partnership model',
+          text: '[PLACEHOLDER] How Daphi and collaborating professionals work together: to be supplied by Daphi.',
+        },
+        eligibility: {
+          title: 'Who can take part',
+          text: '[PLACEHOLDER] Eligibility criteria for collaborators: to be supplied by Daphi.',
+        },
+        terms: {
+          title: 'Commercial terms',
+          text: '[PLACEHOLDER] Any commercial arrangements, if there are any: to be supplied by Daphi.',
+        },
+        start: {
+          title: 'Getting started',
+          text: '[PLACEHOLDER] The first steps and onboarding for new collaborators: to be supplied by Daphi.',
+        },
+      },
+      note: 'Writing to us starts a conversation. It does not create a partnership, and we cannot promise clients, referrals or any particular commercial arrangement.',
+      link: 'Contact Daphi about a partnership',
+      mailSubject: 'Partnership inquiry',
+      mailBody:
+        'Hello Daphi,\n\nI would like to explore working with Daphi to help food businesses.\n\nName and organization:\nWhat we do (technology, consulting, culinary, food technology, other):\nHow we think we could help food businesses:\nWebsite or other link, if any:\n\nThank you.',
+    },
+    dataPointer: {
+      heading: 'Data collaboration',
+      text: 'If you hold granular food loss and waste data and would like to share it, the details are on the Data page.',
+      link: 'Go to sharing existing FLW data',
+    },
+  },
+
+  /** Data page (Stage 4). */
+  data: {
+    jumpLabel: 'On this page',
+    jump: {
+      explore: 'Explore the platform',
+      measurement: 'Request a measurement',
+      share: 'Share your data',
+    },
+    explore: {
+      heading: 'Explore FLW granular data',
+      status: 'The platform is not deployed yet.',
+      text: 'It is not available for public use. Below is what you can do for now.',
+      doc: {
+        label: 'Read more about the future platform',
+        text: 'A document that describes what we plan to build.',
+        missing:
+          '[PLACEHOLDER] The link to the document about the future platform has not been supplied yet. Set futurePlatformDocUrl in src/config/site.config.mjs and the link appears here.',
+        newTab: '(opens in a new tab)',
+      },
+      notify: {
+        label: "Let me know when it's available",
+        text: 'Send us a short email to say you would like to hear when the platform becomes available.',
+        mailSubject: 'Notify me when the Daphi data platform becomes available',
+        mailBody:
+          'Hello Daphi,\n\nI am interested in your planned FLW data platform and would like to hear when it becomes available.\n\nName and organization:\nWhat I would use the data for:\n\nThank you.',
+      },
+      early: {
+        label: 'I want early access to the platform',
+        text: 'Tell us who you are and what you would use the platform for.',
+        mailSubject: 'Early access request: Daphi FLW data platform',
+        mailBody:
+          'Hello Daphi,\n\nI would like to ask about early access to your planned FLW data platform.\n\nName and organization:\nWhat I would use the data for:\nThe kind of data I am interested in:\n\nThank you.',
+      },
+      note: 'These links open an email. There is no waiting list or sign-up system, and writing to us does not guarantee access.',
+    },
+    measurement: {
+      heading: "If the data you need doesn't exist in our platform, you can ask us to measure it for you!",
+      text: 'Tell us what you need to know, and we will tell you whether a measurement is possible and what it would involve.',
+      note: 'We cannot guarantee that we can carry out every requested measurement. Writing to us starts a conversation; it is not an order.',
+      link: 'Contact us to obtain FLW data for your needs',
+      mailSubject: 'FLW data measurement request',
+      mailBody:
+        'Hello Daphi,\n\nI would like to ask whether you can measure food loss and waste data for me.\n\nName and organization:\nWhat needs to be measured (food types, stages of the supply chain, location):\nWhy the data is needed:\nAny method or standard the data should follow:\nThe period or timing that matters:\n\nThank you.',
+    },
+    share: {
+      heading: 'Share existing FLW data',
+      leadIn: 'Do you have your own FLW data?',
+      main: 'Share your data with the world to advance our research and knowledge.',
+      support: 'And create an opportunity for passive income.',
+      explanation:
+        'Daphi only accepts data that we believe is suitable for research. We examine the data and its methodology as part of our assessment. Some datasets may require statistical disclosure measures; if this applies to your data, let us know so we can discuss appropriate measures.',
+      caveat:
+        'Writing to us does not guarantee that your data will be accepted or published, or that it will bring income. Statistical disclosure measures may be relevant to your data, but they are not an automatic guarantee of anonymity.',
+      link: 'Talk to us',
+      mailSubject: 'Sharing FLW data with Daphi',
+      mailBody:
+        'Hello Daphi,\n\nI have food loss and waste data that I would like to discuss sharing.\n\nName and organization:\nWhat the data covers (food types, stages, places, period):\nHow it was collected (method and standards):\nFormat and approximate size:\nWhether statistical disclosure measures may apply:\nWhether I have the right to share it:\n\nThank you.',
     },
   },
 

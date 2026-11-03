@@ -3,8 +3,8 @@
 Bilingual (English / Hebrew, LTR / RTL) informational website for **Daphi**, a nonprofit working to eliminate food loss and waste (FLW).
 Built with [Astro](https://astro.build) as a fully static site, deployable on Cloudflare.
 
-> **Status: Stage 3 of 7 (Homepage and FLW Prevention).** Everything from Stages 1-2 plus the complete Home and FLW Prevention pages
-> in both languages. Partnerships, Data, About and Acknowledgments are still stubs (see `HANDOFF.md`). This README grows with each stage.
+> **Status: Stage 4 of 7 (Partnerships and Data).** Everything from Stages 1-3 plus the complete Partnerships and Data pages
+> in both languages. About and Acknowledgments are still stubs (see `HANDOFF.md`). This README grows with each stage.
 
 ## Requirements
 
@@ -25,6 +25,8 @@ Built with [Astro](https://astro.build) as a fully static site, deployable on Cl
 | `npm run validate:refs` | Reference/citation validation: registry data, plus the built pages if `dist/` exists (fails the build on errors) |
 | `npm run test:refs` | Negative tests that prove the validator fails on broken data/markup (31 cases) |
 | `npm run list:placeholders` | Lists every placeholder still on the site (`-- --strict` exits 1 if any remain) |
+| `npm run check:links` | Internal link/fragment validator over `dist/` (part of `npm run build`): resolution, fragments, unique ids, aria references, language switcher, stable section ids, intent journeys (`scripts/journeys.mjs`), external-link safety, platform-doc link state |
+| `npm run test:links` | Negative tests proving the link validator fails on broken input |
 | `npm run check:routes` | Post-build check of every page, metadata, hreflang, links and `#fragments` |
 | `npm run check:contrast` | WCAG contrast check of the design-token colour pairs |
 | `npm run test:mailto` | Test of the shared mailto helper |
@@ -124,12 +126,22 @@ numbers unchanged; inserting in the middle renumbers the markers after it.
 application gateway state, and `showPlaceholderMarkers` (see Placeholders). Design tokens (colours, fonts, type scale, spacing) are in
 `src/styles/tokens.css`.
 
+## Partnerships and Data (Stage 4)
+
+- **Partnerships** (`src/pages/[lang]/partnerships.astro`): two `IntentTiles` ("Acquire more clients" -> `#working-with-daphi`; "Monetize my granular FLW data" -> `/{lang}/data/#share-data`),
+  the "Working with Daphi" section (general copy, plus placeholder cards for model / eligibility / terms / getting started, and a partnership mailto), and a pointer to the Data page (`#data-collaboration`, no duplicated content).
+- **Data** (`src/pages/[lang]/data.astro`): `#explore-data` (states the platform is not deployed; document link, "notify me" and "early access" mailtos), `#request-measurement`, `#share-data` (with all caveats).
+- **Platform document link**: set `futurePlatformDocUrl` in `src/config/site.config.mjs` to an `https://` URL. While it is empty (or not https) no link is rendered; a marked placeholder is shown instead (`src/lib/external.ts`).
+- Copy and every mailto subject/body: `partnerships` and `data` blocks in `src/i18n/en.ts` / `he.ts` (built with `buildMailto`).
+- Stable section ids: `SECTION_IDS` plus `SECTION_PAGES` (which page each lives on) in `src/config/routes.mjs`. Add both when you add a section other pages link to.
+- Intent journeys that must keep working are listed in `scripts/journeys.mjs`.
+
 ## Home, FLW Prevention and the sensor content (Stage 3)
 
 - **Home** (`src/pages/[lang]/index.astro`): hero (exact heading "We prevent food waste." + cited intro), `IntentTiles` ("I want to:"),
   `AppGateway` ("Coming soon"), `SensorSection` (information first, funding appeal last).
 - **Intent tile destinations**: FLW Prevention; `/{lang}/partnerships/#working-with-daphi`; Data. Fragment ids come from `SECTION_IDS` in `src/config/routes.mjs`.
-  The Partnerships and Data stubs already render those anchors so the links resolve until Stage 4 builds the sections.
+  These anchors now live on the real Partnerships and Data sections (Stage 4).
 - **Sensor content** is one shared source, `src/data/sensor.mjs` (typed access `src/lib/sensor.ts`): confirmed paragraphs, placeholder details
   (purpose, technical approach, intended application, stage), and both funding appeals (`funding.home` is used on Home, `funding.about` is ready for About in Stage 5).
   `FundingCta.astro` renders either. To fill a detail: edit the text, drop `[PLACEHOLDER]`, set `status: 'confirmed'`. Optional image: `public/assets/brand/sensor-project.*`.
