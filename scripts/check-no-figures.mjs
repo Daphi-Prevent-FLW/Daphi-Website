@@ -5,7 +5,9 @@
 //   - the e-mail address                      (footer, contact)
 //   - "(2)" suffixes of repeated backlinks     (Resources page only)
 // Run after `npm run build`:  npm run check:figures   (part of `npm run validate`)
-// If a later stage legitimately needs digits (e.g. timeline years), extend ALLOWED below deliberately.
+// Stage 5: About and Acknowledgments are now checked too. The ONE deliberate exception: timeline DATES. A date the owner
+// supplies in src/data/timeline.mjs renders as <time datetime="...">label</time> and is removed from the About page text before
+// the check (a year is history, not a statistic). Digits anywhere else on About (titles, descriptions) still fail.
 import fs from 'node:fs';
 import path from 'node:path';
 import { LANGS, ROUTES } from '../src/config/routes.mjs';
@@ -22,7 +24,7 @@ const ALLOWED = [
   new RegExp(siteConfig.email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), 'g'),
 ];
 const RESOURCES_ONLY = [/\(\d+\)/g];
-const IGNORED_ROUTES = new Set(['about', 'acknowledgments']); // Stage 5 content (timeline dates) is checked when it exists
+const TIME_ELEMENT = /<time\b[^>]*>[\s\S]*?<\/time>/gi; // timeline dates, About page only
 
 const visibleText = (html) =>
   html
@@ -36,11 +38,12 @@ const problems = [];
 let pages = 0;
 for (const lang of LANGS) {
   for (const route of ROUTES) {
-    if (IGNORED_ROUTES.has(route.id)) continue;
     const file = path.join(dist, lang, route.slug, 'index.html');
     if (!fs.existsSync(file)) continue;
     pages++;
-    let text = visibleText(fs.readFileSync(file, 'utf8'));
+    let html = fs.readFileSync(file, 'utf8');
+    if (route.id === 'about') html = html.replace(TIME_ELEMENT, ' ');
+    let text = visibleText(html);
     for (const re of [...ALLOWED, ...(route.id === 'resources' ? RESOURCES_ONLY : [])]) text = text.replace(re, ' ');
     for (const m of text.matchAll(/\S*\d\S*/g)) problems.push(`/${lang}/${route.slug ? route.slug + '/' : ''}: "${m[0]}"`);
   }

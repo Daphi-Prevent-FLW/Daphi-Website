@@ -49,7 +49,8 @@ section(
     .map(([key, , effect]) => `${key}: ${effect}`),
 );
 
-const SKIP_FILES = new Set(['src/data/references.mjs', 'src/data/stat-placeholders.mjs', 'src/lib/placeholder.ts']);
+// Files that only DEFINE or VALIDATE the placeholder convention (they contain the literal markers in code/messages).
+const SKIP_FILES = new Set(['src/data/references.mjs', 'src/data/stat-placeholders.mjs', 'src/lib/placeholder.ts', 'src/lib/timeline.ts', 'src/lib/acknowledgments.ts']);
 const MARK = /\[PLACEHOLDER\]|\[STAT PLACEHOLDER:|status:\s*['"]placeholder['"]/;
 const isComment = (line) => /^\s*(\*|\/\/|\/\*|<!--)/.test(line);
 const found = [];

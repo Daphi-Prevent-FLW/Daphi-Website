@@ -7,13 +7,15 @@ Read this first when continuing in a new session (see the continuation protocol 
 - **Stage 2: Citation system and Resources page**: completed 2026-10-22.
 - **Stage 3: Homepage and FLW Prevention**: completed 2026-10-25.
 - **Stage 4: Partnerships and Data**: completed 2026-10-26.
+- **Stage 5: About and Acknowledgments**: implemented 2026-10-29, **but NOT build-verified** (the Stage 5 session had no network, so `npm ci`/`astro build`/`astro check` could not run; see sections 4 and 5).
 
 ## 2. Next stage
-- **Stage 5: About and Acknowledgments** (optionally merged with Stage 6). Nothing from Stage 5 has been started.
-  - `about.astro` and `acknowledgments.astro` still render `StubPage` (the `sections` prop is gone; remove `StubPage` and `dict.stub` when both are real).
-  - About reuses `<FundingCta kind="about" level={2}>` (`funding.about` in `src/data/sensor.mjs`) and the shared sensor content.
-  - `check-no-figures.mjs` skips About/Acknowledgments (timeline dates); extend the allow-list deliberately if other pages need digits.
-  - New cited sections need a key in `refs.sections` (EN + HE). New section ids other pages link to need entries in `SECTION_IDS` and `SECTION_PAGES`.
+- **FIRST, before any Stage 6 work:** run `npm ci && npm run build && npm run check && npm run validate` on a machine with network access and fix whatever the Stage 5 code breaks.
+  Stage 5 added Astro components/pages that were written against the existing patterns but never compiled (see section 5). Expect small issues at most; do not redo Stage 5 beyond fixing them.
+- **Stage 6: Hebrew polish, accessibility, responsive QA** (optionally merged with Stage 7). Nothing from Stage 6 has been started.
+  - `check-no-figures.mjs` now covers every page; the only exemption is digits inside `<time>` on About (timeline dates).
+  - New section ids other pages link to need entries in `SECTION_IDS` and `SECTION_PAGES` (the five About ids were added in Stage 5).
+  - Native-speaker review: Stage 5 entries are in `HEBREW_REVIEW.md`.
 
 ## 3. Key architectural decisions and file locations
 - **Astro 7.4, static output**, `trailingSlash: 'always'`, `build.format: 'directory'`. No Cloudflare adapter (static assets served from `dist/`).
@@ -23,10 +25,10 @@ Read this first when continuing in a new session (see the continuation protocol 
   Slugs are identical across languages, so the language switcher maps pages one-to-one.
 - i18n: `src/i18n/en.ts` (defines the `Dictionary` type), `src/i18n/he.ts` (must match), `src/i18n/index.ts` (`getDictionary`, `getDir`, `langStaticPaths`).
   Each page has `pages[routeId] = { title (h1), metaTitle, description, lead }`; nav labels in `nav`; shared UI strings in `ui`.
-- Pages: `src/pages/[lang]/{index,flw-prevention,partnerships,data,about,resources,acknowledgments}.astro` (Home, FLW Prevention, Partnerships, Data are real; About and Acknowledgments render `StubPage`),
+- Pages: `src/pages/[lang]/{index,flw-prevention,partnerships,data,about,resources,acknowledgments}.astro` (all seven are real as of Stage 5),
   `src/pages/index.astro` (language entry), `src/pages/404.astro` (bilingual).
 - Layout/components: `src/layouts/BaseLayout.astro`; `src/components/` `Header`, `Footer`, `SeoHead`, `LanguageSwitcher`, `BrandLogo`, `EmailLink`,
-  `PlaceholderMark`, `PageHeading`, `StubPage` (still used by Partnerships, Data, About, Acknowledgments; takes an optional `sections` prop that renders link-target anchors).
+  `PlaceholderMark`, `PageHeading` (`StubPage` was removed in Stage 5).
 - Brand assets: `src/lib/brand.ts` `resolveBrandAsset()` does the build-time existence check (extension auto-detect, SVG viewBox for dimensions). Folder `public/assets/brand/` (+ its README).
 - Mailto: `src/lib/mailto.ts` `buildMailto({ to?, subject?, body? })`. Use it for ALL mailto links (never hand-build).
 - Styles: `src/styles/tokens.css` (only place for colours/fonts/spacing), `global.css`, `fonts.css`. Logical properties only.
@@ -69,7 +71,33 @@ Read this first when continuing in a new session (see the continuation protocol 
   `SECTION_PAGES` added to `src/config/routes.mjs`. `.button--secondary` added to `global.css`. `list-placeholders` now also reports unset config values.
 - No digits appear in Partnerships/Data copy (figure check passes without extending its allow-list).
 
-## 4. Commands run (Node 22.23.4 / npm 10.9, delivery environment; Stage 4 session)
+### Stage 5 additions
+- **About** (`src/pages/[lang]/about.astro`): `JumpNav`, `#our-story`, `#how-we-work` (placeholder paragraphs), `#timeline` (`Timeline` + `<FundingCta kind="about" level={3} id="sensor-funding-about">`), `#contact` (`EmailLink`).
+  The funding appeal uses heading level **3** (it ends the timeline section), not the level 2 mentioned in the Stage 4 notes.
+- **Timeline data**: `src/data/timeline.mjs` (typed access + validator `assertTimelineValid()` in `src/lib/timeline.ts`; called at build time by `Timeline.astro`). Items: three undated placeholders, `developing-sensor` (`current: true`, confirmed; title/description read from `sensor.milestone` in `src/data/sensor.mjs`), `future-data-platform` (`planned: true`, confirmed as a plan only, links to `/{lang}/data/#explore-data`).
+  No dates exist anywhere yet (none are known); the date label is "Now" / "Planned" / "Date not yet confirmed". Dates added later render in `<time datetime>`.
+- **Acknowledgments data**: `src/data/acknowledgments.mjs` (three placeholder records, no optional fields), `src/lib/acknowledgments.ts` (`entryLinks()` conditional-rendering rule, `assertAcknowledgmentsValid()`), `src/components/AcknowledgmentEntry.astro`. Pictures from `public/assets/people/` (README there).
+- **New components**: `Timeline`, `AcknowledgmentEntry`, `JumpNav`. **Removed**: `StubPage` and the `stub` dictionary block (no page is a stub any more). `src/i18n/{en,he}.ts` gained `about` and `acknowledgments` blocks.
+- **Routes**: `SECTION_IDS`/`SECTION_PAGES` gained `aboutStory`, `aboutHow`, `aboutTimeline`, `aboutFunding`, `aboutContact`. `scripts/journeys.mjs` gained five About journeys (jump links + timeline -> Data).
+- **Scripts**: `scripts/test-acknowledgments.mjs` (`npm run test:stage5`, 35 checks, part of `npm run validate`). `check-no-figures.mjs` no longer skips About/Acknowledgments (see above). `list-placeholders.mjs` skips the two validator libs (they contain the literal markers in messages).
+- Mailto on About: the funding CTA only (`funding.about`: subject "Funding opportunities for Daphi's sensor development" / Hebrew equivalent); the contact section is the plain address.
+- Not done on purpose: no citations on About (no factual claims needing a source), so `refs.sections` got no new key.
+
+## 4. Commands run
+| Command | Result |
+| --- | --- |
+| **Stage 5 session (Node 22.22.2 / npm 10.9.7, NO NETWORK)** | |
+| `npm ci` | **FAILED**: `ENOTFOUND registry.npmjs.org`, no npm cache, Astro not installed anywhere. `astro build`, `astro check`, `npm run build` and everything that reads `dist/` could **not be run** |
+| `node scripts/test-acknowledgments.mjs` (`npm run test:stage5`) | passed: 35 checks (conditional rendering incl. invalid values, data validators, timeline rules; most are negative) |
+| `node scripts/check-contrast.mjs`, `test-mailto.mjs`, `test-validate-refs.mjs` (31 cases), `test-check-links.mjs` (30 cases), `validate-refs.mjs` (registry only) | passed (dist-dependent parts skipped: no `dist/`) |
+| `tsc --noEmit` (global TypeScript, temp config outside the project, `strict`) over `src/i18n/*`, `src/lib/{timeline,acknowledgments,sensor,placeholder}.ts` | passed; negative control (deleted a Hebrew key) correctly failed, then restored. `.astro` files are NOT covered |
+| `check-no-figures.mjs` against a synthetic `dist/` in a temp dir | passed for a year inside `<time>` on About; correctly failed for "30%" in About text and for a `<time>` on another page |
+| `node scripts/list-placeholders.mjs` | runs; new timeline/acknowledgments/About items are listed |
+| Colour contrast of the new combinations (computed) | accent-text on surface 5.33:1, accent-text on background 5.78:1, on-strong on strong 6.41:1 (all >= 4.5:1) |
+| Browser / Playwright rendering | **not done** (no built site to render) |
+
+Earlier sessions (kept for reference; the rows below are from the Stage 4 session, Node 22.23.4 / npm 10.9, with network access):
+
 | Command | Result |
 | --- | --- |
 | `npm ci` (from the Stage 2 zip, before any change) and `npm run build` | passed (baseline) |
@@ -84,6 +112,14 @@ Read this first when continuing in a new session (see the continuation protocol 
 | Playwright + Chromium, Stage 3 | Home and FLW Prevention, EN + HE, 1280 px and 375 px: no horizontal overflow, no console errors; screenshots inspected; citation popover opens on hover; tile destinations; Partnerships tile lands on `#working-with-daphi`; mailto links (EN/HE) read back correctly |
 
 ## 5. Known issues and unverified items
+- **STAGE 5 IS NOT BUILD-VERIFIED.** No `astro build`, `astro check`, route check, link check, figure check on real output, or browser render was possible. The new `.astro` files (`about.astro`, `acknowledgments.astro`, `Timeline.astro`,
+  `AcknowledgmentEntry.astro`, `JumpNav.astro`) were written by following the existing components' patterns and re-read by hand; they have never been compiled. Likeliest failure points if something breaks:
+  Astro/TS typing in `AcknowledgmentEntry.astro` / `Timeline.astro` (`astro check`), a scoped-CSS selector, or a link/id rule in `check-links.mjs` (all ids on About were checked by hand for collisions with Header/Footer).
+  The fix is expected to be small; run the commands in section 2 first.
+- Stage 5 visuals are unseen: timeline line/marker alignment in LTR and RTL, the current-milestone panel, acknowledgment rows (no real data to test pictures/links with: the logic is unit-tested, the rendering is not), jump links, phones.
+- Timeline: all history is placeholder and undated; the only confirmed items are the current sensor milestone and the planned (not deployed) data platform. Adding the planned platform to the timeline was a judgement call (it states only what the brief says: planned, not deployed, no date); delete the item in `src/data/timeline.mjs` if Daphi prefers.
+- Acknowledgment pictures use `alt=""` (decorative, name adjacent); icon links use `aria-label`. Not screen-reader tested.
+- `JumpNav` duplicates the Data page's inline "On this page" markup/CSS; the Data page was deliberately left untouched in Stage 5 (can adopt `JumpNav` in Stage 6).
 - **Stage 4 not verified**: keyboard walk-through beyond one Tab step, screen readers, Safari/Firefox, real touch devices; mail clients opening the mailto links (only the URL contents were read back). Hebrew copy of both pages is new and unreviewed (`HEBREW_REVIEW.md`, Stage 4 entries).
 - The Hebrew missing-doc placeholder contains a Latin identifier and path inside RTL text; bidi order looked acceptable in a screenshot but is flagged for review.
 - The link validator uses regex-based HTML parsing (tested, incl. unquoted attributes); it is not a full HTML parser.
@@ -104,4 +140,4 @@ Read this first when continuing in a new session (see the continuation protocol 
 
 ## 6. Outstanding inputs (do not block on these)
 Official favicon (the EN/HE logos and email icon were added to `public/assets/brand/` by the owner before Stage 2; the site picks them up automatically); production domain; Google Doc URL for the future platform; application URL; fact-checked statistics and real references (supplied by the owner);
-verified sensor details and stage; About text; real acknowledgment names/photos/links; prevention-process infographic; native-speaker review of Hebrew.
+verified sensor details and stage; About text (story, how we work) and real timeline history with dates; real acknowledgment names/photos/links; prevention-process infographic; native-speaker review of Hebrew.

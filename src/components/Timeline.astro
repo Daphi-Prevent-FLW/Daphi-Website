@@ -1,0 +1,181 @@
+---
+/**
+ * Project timeline, driven entirely by src/data/timeline.mjs (edit the data, not this component).
+ * One column, items stacked top to bottom, with the line and markers at the INLINE START edge, so the
+ * same CSS gives the correct layout in LTR (left) and RTL (right). Layout uses logical properties only.
+ * Nothing relies on colour alone:
+ *   current milestone  filled panel + large ring marker + the text "Current milestone"
+ *   placeholder        dashed border + dashed hollow marker + the "Placeholder" badge
+ *   planned            hollow solid marker + the date label ("Planned")
+ * Dates are only ever shown from the data: undated items read "Date not yet confirmed".
+ */
+import PlaceholderMark from './PlaceholderMark.astro';
+import { timeline, assertTimelineValid } from '../lib/timeline';
+import { localized } from '../lib/references';
+import { routePath } from '../lib/routes';
+import { stripPlaceholderMarkup } from '../lib/placeholder';
+import { getDictionary, type Lang } from '../i18n';
+
+interface Props {
+  lang: Lang;
+  /** id of the heading that names this list. */
+  labelledby: string;
+}
+const { lang, labelledby } = Astro.props;
+const t = getDictionary(lang).about.timeline;
+assertTimelineValid(); // a bad data edit fails the build with a readable message
+
+const items = timeline.map((item) => ({
+  item,
+  title: stripPlaceholderMarkup(localized(item.title, lang)),
+  description: stripPlaceholderMarkup(localized(item.description, lang)),
+  dateLabel: item.date ? localized(item.date.label, lang) : null,
+  project: item.project ? localized(item.project, lang) : null,
+  link: item.link ? { href: routePath(lang, item.link.route, item.link.hash), label: localized(item.link.label, lang) } : null,
+}));
+---
+
+<ol class="timeline" aria-labelledby={labelledby}>
+  {
+    items.map(({ item, title, description, dateLabel, project, link }) => (
+      <li
+        class="timeline__item"
+        id={`timeline-${item.id}`}
+        data-status={item.status}
+        data-current={item.current ? 'true' : undefined}
+        data-planned={item.planned ? 'true' : undefined}
+      >
+        <span class="timeline__marker" aria-hidden="true" />
+        <div class="timeline__body">
+          <p class="timeline__meta">
+            {
+              dateLabel === null ? (
+                <span class="timeline__date">{t.undated}</span>
+              ) : item.date?.iso ? (
+                <time class="timeline__date" datetime={item.date.iso}>
+                  {dateLabel}
+                </time>
+              ) : (
+                <span class="timeline__date">{dateLabel}</span>
+              )
+            }
+            {item.current && <span class="timeline__flag">{t.current}</span>}
+            {item.status === 'placeholder' && <PlaceholderMark lang={lang} />}
+            {project && <span class="timeline__project">{project}</span>}
+          </p>
+          <h3 class="timeline__title">{title}</h3>
+          <p class="timeline__text">{description}</p>
+          {link && <a class="timeline__link" href={link.href}>{link.label}</a>}
+        </div>
+      </li>
+    ))
+  }
+</ol>
+
+<style>
+  .timeline {
+    --marker-size: 1.5rem;
+    --line-width: 3px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .timeline__item {
+    position: relative;
+    padding-inline-start: calc(var(--marker-size) + var(--space-m));
+    padding-block-end: var(--space-m);
+  }
+  /* The vertical line, centred on the markers; the last item's line stops at its marker. */
+  .timeline__item::before {
+    content: '';
+    position: absolute;
+    inset-block: 0;
+    inset-inline-start: calc(var(--marker-size) / 2 - var(--line-width) / 2);
+    inline-size: var(--line-width);
+    background: var(--color-accent);
+  }
+  .timeline__item:last-child::before {
+    block-size: calc(var(--marker-size) / 2 + var(--space-2xs));
+  }
+  .timeline__item:last-child {
+    padding-block-end: 0;
+  }
+  .timeline__marker {
+    position: absolute;
+    inset-block-start: var(--space-xs);
+    inset-inline-start: 0;
+    inline-size: var(--marker-size);
+    block-size: var(--marker-size);
+    border: var(--border-width) solid var(--color-accent);
+    border-radius: 50%;
+    background: var(--color-text);
+  }
+  .timeline__item[data-status='placeholder'] .timeline__marker {
+    background: var(--color-bg);
+    border-style: dashed;
+  }
+  .timeline__item[data-planned] .timeline__marker {
+    background: var(--color-bg);
+  }
+  .timeline__item[data-current] .timeline__marker {
+    background: var(--color-text);
+    border-color: var(--color-text);
+    box-shadow: 0 0 0 4px var(--color-bg), 0 0 0 7px var(--color-text);
+  }
+
+  .timeline__body {
+    padding: var(--space-s) var(--space-m);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+  }
+  .timeline__item[data-status='placeholder'] .timeline__body {
+    border-style: dashed;
+    background: transparent;
+  }
+  .timeline__item[data-current] .timeline__body {
+    border-color: var(--color-strong);
+    background: var(--color-strong);
+    color: var(--color-on-strong);
+  }
+  .timeline__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2xs) var(--space-xs);
+    margin-block-end: var(--space-2xs);
+    font-size: var(--step--1);
+  }
+  .timeline__date {
+    font-weight: 700;
+    color: var(--color-accent-text);
+  }
+  .timeline__item[data-current] .timeline__date {
+    color: var(--color-on-strong);
+  }
+  .timeline__flag {
+    padding: 0 var(--space-2xs);
+    border: var(--border-width) solid currentColor;
+    border-radius: var(--radius-s);
+    font-weight: 700;
+  }
+  .timeline__project {
+    color: var(--color-accent-text);
+  }
+  .timeline__item[data-current] .timeline__project {
+    color: var(--color-on-strong);
+  }
+  .timeline__title {
+    margin-block-end: var(--space-2xs);
+    font-size: var(--step-1);
+  }
+  .timeline__text {
+    margin-block-end: 0;
+  }
+  .timeline__link {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--touch-target);
+    margin-block-start: var(--space-3xs);
+  }
+</style>

@@ -10,4 +10,9 @@ export const JOURNEYS = [
   { label: 'Data page: jump to explore', from: '/{lang}/data/', href: '#explore-data' },
   { label: 'Data page: jump to measurement', from: '/{lang}/data/', href: '#request-measurement' },
   { label: 'Data page: jump to share', from: '/{lang}/data/', href: '#share-data' },
+  { label: 'About page: jump to our story', from: '/{lang}/about/', href: '#our-story' },
+  { label: 'About page: jump to how we work', from: '/{lang}/about/', href: '#how-we-work' },
+  { label: 'About page: jump to the timeline', from: '/{lang}/about/', href: '#timeline' },
+  { label: 'About page: jump to contact', from: '/{lang}/about/', href: '#contact' },
+  { label: 'About timeline: planned platform leads to the Data page', from: '/{lang}/about/', href: '/{lang}/data/#explore-data' },
 ];

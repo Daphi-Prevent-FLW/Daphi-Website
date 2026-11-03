@@ -1,16 +1,55 @@
 ---
-// Route: /{lang}/acknowledgments/  (en + he). Stage 1 stub: replaced by real content in a later stage.
+// Route: /{lang}/acknowledgments/  (en + he). The list is data: src/data/acknowledgments.mjs (placeholder records only for now).
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import StubPage from '../../components/StubPage.astro';
-import { langStaticPaths, type Lang } from '../../i18n';
+import PageHeading from '../../components/PageHeading.astro';
+import PlaceholderMark from '../../components/PlaceholderMark.astro';
+import AcknowledgmentEntry from '../../components/AcknowledgmentEntry.astro';
+import { langStaticPaths, getDictionary, type Lang } from '../../i18n';
+import { acknowledgments, assertAcknowledgmentsValid } from '../../lib/acknowledgments';
+import { stripPlaceholderMarkup } from '../../lib/placeholder';
 
 export function getStaticPaths() {
   return langStaticPaths();
 }
 
 const lang = Astro.params.lang as Lang;
+const dict = getDictionary(lang);
+const page = dict.pages.acknowledgments;
+const d = dict.acknowledgments;
+assertAcknowledgmentsValid(); // a bad data edit fails the build with a readable message
+const hasPlaceholders = acknowledgments.some((a) => a.status === 'placeholder');
 ---
 
 <BaseLayout lang={lang} routeId="acknowledgments">
-  <StubPage lang={lang} routeId="acknowledgments" />
+  <PageHeading title={page.title} lead={page.lead} />
+
+  <section class="container section" aria-labelledby="contributors-heading">
+    <h2 id="contributors-heading" class="section__heading">{d.listHeading}</h2>
+    {
+      hasPlaceholders && (
+        <p class="notice">
+          <PlaceholderMark lang={lang} />
+          {stripPlaceholderMarkup(d.notice)}
+        </p>
+      )
+    }
+    <ul class="ack-list">
+      {acknowledgments.map((entry) => <AcknowledgmentEntry lang={lang} entry={entry} />)}
+    </ul>
+  </section>
 </BaseLayout>
+
+<style>
+  .ack-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr));
+    gap: var(--space-s);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .notice {
+    font-size: var(--step--1);
+    color: var(--color-accent-text);
+  }
+</style>

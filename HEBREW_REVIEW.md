@@ -136,3 +136,36 @@ Mixed-language handling: the email address is wrapped in `<bdi dir="ltr">`; keep
 | --- | --- |
 | `data.explore.doc.missing` | Contains the Latin identifier `futurePlatformDocUrl` and a file path inside Hebrew text (editorial note, disappears once the URL is set). Check bidi order. |
 | Page `title` for the measurement heading | Long heading (copied from the required wording); check line breaks on phones. |
+
+## Stage 5 entries (About and Acknowledgments)
+
+### A. Terms with more than one reasonable translation
+| Where (key) | Current Hebrew | English | Alternatives / question |
+| --- | --- | --- | --- |
+| `about.jump.how`, `about.how.heading` | כך אנחנו עובדים | How we work | דרך העבודה שלנו, שיטת העבודה שלנו |
+| `about.timeline.heading` | ציר הזמן של הפרויקטים | Project timeline | אבני דרך, ציר זמן |
+| `about.contact.heading`, `about.jump.contact` | צרו קשר | Contact us | (the footer uses יצירת קשר, a noun heading; check whether both forms should match) |
+| `timeline.mjs` current milestone title (via `sensor.milestone.title`) | מפתחים חיישן | Developing a sensor | דפי מפתחת חיישן; the Home heading uses a similar "מפתחים…" form |
+| `timeline.mjs` date labels | כעת / מתוכנן | Now / Planned | עכשיו, בימים אלה / בתכנון |
+| `acknowledgments.listHeading` | תורמים | Contributors | תורמות ותורמים, אנשים שתרמו |
+| `acknowledgments.email` | דוא״ל | Email | אימייל, מייל (the rest of the site uses דוא״ל) |
+| `acknowledgments.linkedin` | פרופיל בלינקדאין | LinkedIn profile | פרופיל LinkedIn (Latin brand name inside Hebrew text; would need `<bdi>`) |
+| `timeline.mjs` placeholder name | [PLACEHOLDER] שם התורם/ת | Contributor name | Slash form for gender neutrality; consider neutral phrasing (e.g. שם) |
+
+### B. Scientific terms needing expert check
+`timeline.mjs` `future-data-platform`: פלטפורמת נתונים עתידית על אובדן ובזבוז מזון / נתונים מפורטים על אובדן ובזבוז מזון. "Granular" is rendered as מפורטים here (as on the Data page); the settled term is still open (see Stage 1, section B).
+
+### C. Phrases whose tone is uncertain
+| Where | Note |
+| --- | --- |
+| `about.story.paragraphs`, `about.how.paragraphs` | Editorial notes addressed to Daphi ("יש להשלים על ידי דפי") are visible placeholder text. They disappear when the real text replaces them. |
+| `about.timeline.intro` | "הם אינם אירועים אמיתיים" is blunt on purpose (placeholders must not read as history); check the tone. |
+| `timeline.mjs` placeholder items | "יש להחליף באירוע מאומת ובתאריך, או למחוק את הפריט" is an instruction to the editor, shown only while the placeholder markers are on. |
+| `sensor.milestone.description` | New Hebrew sentence (also used on About only): "דפי מפתחת כעת חיישן כחלק מפעילותה למניעת אובדן ובזבוז מזון…". |
+| `acknowledgments.notice` | "הרשומות להלן הן טקסט זמני": check "רשומות" vs "פריטים". |
+
+### D. Mixed-direction / awkward strings
+| Where | Note |
+| --- | --- |
+| Acknowledgment names | Rendered inside `<bdi>`, so a Latin name inside Hebrew text keeps its order. Check with real names. |
+| Icon links' `aria-label` | Built as "{label}: {name} {newTab}" (e.g. `אתר אינטרנט: … (נפתח בלשונית חדשה)`); check how a Hebrew screen reader reads it. |

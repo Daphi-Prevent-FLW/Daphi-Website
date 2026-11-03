@@ -25,6 +25,7 @@ export const sensor = sensorData as unknown as {
   detailsHeading: Localized;
   details: SensorDetail[];
   imageAlt: Localized;
+  milestone: { title: Localized; description: Localized };
   funding: Record<FundingKind, SensorFunding>;
 };
 

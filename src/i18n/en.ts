@@ -47,10 +47,6 @@ const en = {
     fallbackLogoTitle: 'Fallback wordmark: the official logo file has not been added yet',
   },
 
-  stub: {
-    notice: '[PLACEHOLDER] The content of this page will be added in a later build stage.',
-  },
-
   /** References, citation markers and the Resources page (Stage 2). */
   refs: {
     /** Visually hidden word read before a citation number, e.g. "Reference [1]". */
@@ -352,6 +348,54 @@ const en = {
       mailBody:
         'Hello Daphi,\n\nI have food loss and waste data that I would like to discuss sharing.\n\nName and organization:\nWhat the data covers (food types, stages, places, period):\nHow it was collected (method and standards):\nFormat and approximate size:\nWhether statistical disclosure measures may apply:\nWhether I have the right to share it:\n\nThank you.',
     },
+  },
+
+  /** About page (Stage 5). The timeline itself is data: src/data/timeline.mjs. Sensor texts: src/data/sensor.mjs. */
+  about: {
+    jumpLabel: 'On this page',
+    jump: {
+      story: 'Our story',
+      how: 'How we work',
+      timeline: 'Project timeline',
+      contact: 'Contact us',
+    },
+    story: {
+      heading: 'Our story',
+      paragraphs: [
+        '[PLACEHOLDER] Where Daphi came from: the people, the moment or the problem that led to its founding. To be written by Daphi.',
+        '[PLACEHOLDER] Why Daphi works on food loss and waste: the motivation behind the mission. To be written by Daphi.',
+        '[PLACEHOLDER] How Daphi has developed since, and where it is heading. To be written by Daphi.',
+      ],
+    },
+    how: {
+      heading: 'How we work',
+      paragraphs: [
+        '[PLACEHOLDER] How environmental and social goals shape Daphi’s work. To be written by Daphi.',
+        '[PLACEHOLDER] The role of research and technology in Daphi’s work, and how they fit together. To be written by Daphi.',
+        '[PLACEHOLDER] How Daphi works with food businesses and collaborators in practice. To be written by Daphi.',
+      ],
+    },
+    timeline: {
+      heading: 'Project timeline',
+      intro:
+        'A simple view of how Daphi’s work has developed and where it is now. Entries marked as placeholders show where verified history will go. They are not real events.',
+      undated: 'Date not yet confirmed',
+      current: 'Current milestone',
+    },
+    contact: {
+      heading: 'Contact us',
+      text: 'Write to us at the address below.',
+    },
+  },
+
+  /** Acknowledgments page (Stage 5). The entries are data: src/data/acknowledgments.mjs. */
+  acknowledgments: {
+    notice: '[PLACEHOLDER] The entries below are placeholders. Real names, pictures and links will be added.',
+    listHeading: 'Contributors',
+    linkedin: 'LinkedIn profile',
+    website: 'Website',
+    email: 'Email',
+    newTab: '(opens in a new tab)',
   },
 
   pages: {

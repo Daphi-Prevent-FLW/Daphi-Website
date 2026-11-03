@@ -28,7 +28,7 @@ export const ROUTES = /** @type {const} */ ([
 
 /**
  * Stable in-page section IDs that other pages link to. Kept in one place so links and
- * the page markup cannot drift apart. (Sections themselves are built in later stages.)
+ * the page markup cannot drift apart. 
  */
 export const SECTION_IDS = /** @type {const} */ ({
   partnershipsWorkingWithDaphi: 'working-with-daphi',
@@ -36,6 +36,11 @@ export const SECTION_IDS = /** @type {const} */ ({
   dataExplore: 'explore-data',
   dataMeasurement: 'request-measurement',
   dataShare: 'share-data',
+  aboutStory: 'our-story',
+  aboutHow: 'how-we-work',
+  aboutTimeline: 'timeline',
+  aboutFunding: 'sensor-funding-about',
+  aboutContact: 'contact',
 });
 
 /**
@@ -49,4 +54,9 @@ export const SECTION_PAGES = /** @type {const} */ ({
   dataExplore: 'data',
   dataMeasurement: 'data',
   dataShare: 'data',
+  aboutStory: 'about',
+  aboutHow: 'about',
+  aboutTimeline: 'about',
+  aboutFunding: 'about',
+  aboutContact: 'about',
 });

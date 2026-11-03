@@ -13,7 +13,7 @@
     "preview": "astro preview",
     "check": "astro check",
     "check:routes": "node scripts/check-routes.mjs",
-    "validate": "npm run check:contrast && npm run test:mailto && npm run test:refs && npm run test:links && npm run validate:refs && npm run check:routes && npm run check:links && npm run check:figures",
+    "validate": "npm run check:contrast && npm run test:mailto && npm run test:refs && npm run test:links && npm run test:stage5 && npm run validate:refs && npm run check:routes && npm run check:links && npm run check:figures",
     "sync:fonts": "node scripts/sync-fonts.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "test:mailto": "node scripts/test-mailto.mjs",
@@ -22,7 +22,8 @@
     "list:placeholders": "node scripts/list-placeholders.mjs",
     "check:figures": "node scripts/check-no-figures.mjs",
     "check:links": "node scripts/check-links.mjs",
-    "test:links": "node scripts/test-check-links.mjs"
+    "test:links": "node scripts/test-check-links.mjs",
+    "test:stage5": "node scripts/test-acknowledgments.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

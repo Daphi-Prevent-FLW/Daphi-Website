@@ -1,7 +1,7 @@
 // @ts-check
 /**
  * SHARED SENSOR-PROJECT CONTENT: the single source for the sensor-development text and the two
- * funding appeals. Used by the Home page now and by the About page (Stage 5), so the project
+ * funding appeals. Used by the Home page and by the About page (timeline entry + funding appeal), so the project
  * description can never drift between pages.
  *
  * What is CONFIRMED (status 'confirmed'): Daphi is currently developing a sensor, as part of its
@@ -95,7 +95,19 @@ export const sensor = {
   /** Optional project image: alt text used only when public/assets/brand/sensor-project.* exists. Update it to describe the real image. */
   imageAlt: { en: 'The sensor development project', he: 'פרויקט פיתוח החיישן' },
 
-  /** Funding appeals. `home` ends the Home sensor section; `about` is used on the About page (Stage 5). */
+  /**
+   * The sensor's entry in the About-page timeline (src/data/timeline.mjs reads it from here, so the
+   * About description cannot drift from the Home section). Confirmed facts only: no stage, date or spec.
+   */
+  milestone: {
+    title: { en: 'Developing a sensor', he: 'מפתחים חיישן' },
+    description: {
+      en: 'Daphi is currently developing a sensor as part of its work to prevent food loss and waste. Further details about the technology, its intended applications, and its development milestones will be added as the project progresses.',
+      he: 'דפי מפתחת כעת חיישן כחלק מפעילותה למניעת אובדן ובזבוז מזון. פרטים נוספים על הטכנולוגיה, על היישומים המיועדים ועל אבני הדרך בפיתוח יתווספו ככל שהפרויקט יתקדם.',
+    },
+  },
+
+  /** Funding appeals. `home` ends the Home sensor section; `about` ends the About timeline (Stage 5). */
   funding: {
     home: /** @type {SensorFunding} */ ({
       heading: { en: 'Help us bring this development forward', he: 'עזרו לנו לקדם את הפיתוח' },

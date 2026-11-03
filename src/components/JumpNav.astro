@@ -1,0 +1,38 @@
+---
+/**
+ * "On this page" links to in-page sections (stable ids). Plain anchors: work without JavaScript.
+ * Used on About. (The Data page has its own equivalent markup from Stage 4; it can adopt this component.)
+ */
+interface Props {
+  label: string;
+  links: { id: string; label: string }[];
+}
+const { label, links } = Astro.props;
+---
+
+<nav class="container jump" aria-label={label}>
+  <ul>
+    {links.map((l) => <li><a href={`#${l.id}`}>{l.label}</a></li>)}
+  </ul>
+</nav>
+
+<style>
+  .jump ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .jump a {
+    display: inline-flex;
+    align-items: center;
+    min-block-size: var(--touch-target);
+    padding: var(--space-2xs) var(--space-s);
+    border: var(--border-width) solid var(--color-border);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    color: var(--color-text);
+  }
+</style>

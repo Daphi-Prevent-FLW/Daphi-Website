@@ -3,8 +3,9 @@
 Bilingual (English / Hebrew, LTR / RTL) informational website for **Daphi**, a nonprofit working to eliminate food loss and waste (FLW).
 Built with [Astro](https://astro.build) as a fully static site, deployable on Cloudflare.
 
-> **Status: Stage 4 of 7 (Partnerships and Data).** Everything from Stages 1-3 plus the complete Partnerships and Data pages
-> in both languages. About and Acknowledgments are still stubs (see `HANDOFF.md`). This README grows with each stage.
+> **Status: Stage 5 of 7 (About and Acknowledgments).** All seven pages now exist in both languages and the site is content-complete
+> (with clearly marked placeholders where Daphi's own content is still to come). Stages 6 (Hebrew/accessibility/responsive QA) and 7
+> (documentation and handoff) remain; see `HANDOFF.md`. This README grows with each stage.
 
 ## Requirements
 
@@ -20,7 +21,7 @@ Built with [Astro](https://astro.build) as a fully static site, deployable on Cl
 | `npm run build` | Production build to `dist/`, then the reference validation and the route/link check |
 | `npm run preview` | Serve the built `dist/` locally |
 | `npm run check` | Astro/TypeScript type check |
-| `npm run validate` | Contrast + mailto tests + reference-validator tests + reference validation + route/link check + figure check (run `npm run build` first) |
+| `npm run validate` | Contrast + mailto tests + reference-validator tests + link-validator tests + Stage 5 data tests + reference validation + route/link check + figure check (run `npm run build` first) |
 | `npm run check:figures` | Fails if any digit (a statistic) appears in the visible text of the built pages; citation numbers and the e-mail address are exempt |
 | `npm run validate:refs` | Reference/citation validation: registry data, plus the built pages if `dist/` exists (fails the build on errors) |
 | `npm run test:refs` | Negative tests that prove the validator fails on broken data/markup (31 cases) |
@@ -30,6 +31,7 @@ Built with [Astro](https://astro.build) as a fully static site, deployable on Cl
 | `npm run check:routes` | Post-build check of every page, metadata, hreflang, links and `#fragments` |
 | `npm run check:contrast` | WCAG contrast check of the design-token colour pairs |
 | `npm run test:mailto` | Test of the shared mailto helper |
+| `npm run test:stage5` | Tests of the timeline and acknowledgments data rules and of the acknowledgment conditional-rendering logic (35 checks, most of them negative) |
 | `npm run sync:fonts` | Re-copy font files from `@fontsource` to `public/fonts` (already committed) |
 
 ## Routing and localization
@@ -136,6 +138,27 @@ application gateway state, and `showPlaceholderMarkers` (see Placeholders). Desi
 - Stable section ids: `SECTION_IDS` plus `SECTION_PAGES` (which page each lives on) in `src/config/routes.mjs`. Add both when you add a section other pages link to.
 - Intent journeys that must keep working are listed in `scripts/journeys.mjs`.
 
+## About and Acknowledgments (Stage 5)
+
+- **About** (`src/pages/[lang]/about.astro`): `#our-story` and `#how-we-work` (three clearly marked placeholder paragraphs each, copy in the `about` block of `src/i18n/en.ts` / `he.ts`),
+  `#timeline` (the data-driven timeline, ended by the sensor funding appeal `#sensor-funding-about`, "Discuss funding opportunities"), and `#contact` (the email address with the email icon).
+  The "On this page" links (`JumpNav`) are plain anchors.
+- **Timeline** is edited in **`src/data/timeline.mjs`** only (the header comment documents every field). Each item has a stable `id`, a `status` (`confirmed` | `placeholder`), an optional date
+  (`{ label, iso? }`), a title, a description, and optional `link` / `project`. `current: true` marks the one current milestone ("Developing a sensor"); `planned: true` marks something planned but not done.
+  Undated items read "Date not yet confirmed": **never guess a date**. The current milestone's title and description are read from `src/data/sensor.mjs` (`milestone`), so Home and About cannot drift.
+  The component (`src/components/Timeline.astro`) is one column with the line and markers at the inline-start edge, so it is correct in LTR and RTL with logical properties only.
+  State is not colour-only: the current item is a filled panel with the text "Current milestone"; placeholders have dashed borders and a badge; planned items carry the label "Planned".
+  `assertTimelineValid()` fails the build for duplicate ids, not exactly one current item, a placeholder without the `[PLACEHOLDER]` prefix, a dated placeholder or planned item, and similar mistakes.
+- **To add a real milestone**: copy an item, give it a new `id`, set `status: 'confirmed'`, remove the `[PLACEHOLDER]` prefixes, add `date: { label: '2019', iso: '2019' }`. Dates render in `<time>`; `npm run check:figures` exempts digits inside `<time>` on the About page only.
+- **Funding appeal**: `<FundingCta kind="about">` (shared source `src/data/sensor.mjs`, `funding.about`); heading level 3 because it ends the timeline section.
+- **Acknowledgments** (`src/pages/[lang]/acknowledgments.astro`): the list is **`src/data/acknowledgments.mjs`** (header comment documents the fields). Fields `picture`, `linkedin`, `website`, `email` are all optional and simply disappear when missing:
+  no picture -> no image and no empty circle; no LinkedIn -> the name is plain text (with it, the name is the link); no website -> no website icon; no email -> no email icon. Values that are not valid (`https://` URL, plain address) count as missing,
+  so a typo cannot become a dead link. The rule lives in `entryLinks()` in `src/lib/acknowledgments.ts` and is tested by `npm run test:stage5`.
+  Pictures: put the file in `public/assets/people/` and set `picture: 'assets/people/<file>'` (checked at build time; shown as a small circle; decorative `alt=""` because the name is next to it).
+  Icons are original generic inline SVG glyphs (website, email); the official email icon is used instead when its file exists. All three seed records are placeholders (`status: 'placeholder'`); no person, URL or address was invented.
+  Order is direction-aware with no direction-specific CSS: LTR picture, name, website icon, email icon from the left; RTL the same sequence from the right.
+- `StubPage` and the `stub` dictionary block were removed: no page is a stub any more.
+
 ## Home, FLW Prevention and the sensor content (Stage 3)
 
 - **Home** (`src/pages/[lang]/index.astro`): hero (exact heading "We prevent food waste." + cited intro), `IntentTiles` ("I want to:"),
@@ -143,7 +166,7 @@ application gateway state, and `showPlaceholderMarkers` (see Placeholders). Desi
 - **Intent tile destinations**: FLW Prevention; `/{lang}/partnerships/#working-with-daphi`; Data. Fragment ids come from `SECTION_IDS` in `src/config/routes.mjs`.
   These anchors now live on the real Partnerships and Data sections (Stage 4).
 - **Sensor content** is one shared source, `src/data/sensor.mjs` (typed access `src/lib/sensor.ts`): confirmed paragraphs, placeholder details
-  (purpose, technical approach, intended application, stage), and both funding appeals (`funding.home` is used on Home, `funding.about` is ready for About in Stage 5).
+  (purpose, technical approach, intended application, stage), and both funding appeals (`funding.home` is used on Home, `funding.about` is used on About, see "About and Acknowledgments (Stage 5)").
   `FundingCta.astro` renders either. To fill a detail: edit the text, drop `[PLACEHOLDER]`, set `status: 'confirmed'`. Optional image: `public/assets/brand/sensor-project.*`.
 - **Application gateway**: `siteConfig.app` in `src/config/site.config.mjs`. It stays "Coming soon" (email contact only) until `state: 'available'` **and** an `https://` `url` are both set.
 - **FLW Prevention** (`src/pages/[lang]/flw-prevention.astro`): sections `#scale`, `#prevention-process`, `#work-with-us`. Page copy is in the `prevention` block of `src/i18n/en.ts` / `he.ts`.
@@ -197,7 +220,7 @@ script is bundled by Astro and may be inlined too); tighten it in a later stage 
 ## Still to be supplied
 
 Official favicon, production domain, Google Doc URL for the future platform, application URL, **real references (replace the six placeholder
-records) and fact-checked statistics**, verified sensor details, About text, acknowledgment entries, prevention-process infographic, native review of Hebrew copy.
+records) and fact-checked statistics**, verified sensor details, About text and real timeline history, acknowledgment entries (names, pictures, links), prevention-process infographic, native review of Hebrew copy.
 Full list: `HANDOFF.md`.
 
 ## License
