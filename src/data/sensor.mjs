@@ -131,7 +131,7 @@ export const sensor = {
       heading: { en: 'Help us develop the sensor', he: 'עזרו לנו לפתח את החיישן' },
       text: {
         en: 'We are looking for funding to support the development of our sensor and advance this project. If you represent a funding organization, NGO, public institution, or private funder interested in supporting this work, please get in touch.',
-        he: 'אנחנו מחפשים מימון לפיתוח החיישן שלנו ולקידום הפרויקט. אם אתם מייצגים ארגון מממן, ארגון לא־ממשלתי, מוסד ציבורי או גוף פרטי המעוניין לתמוך בעבודה הזו, אנא צרו קשר.',
+        he: 'אנחנו מחפשים מימון לפיתוח החיישן שלנו ולקידום הפרויקט. אם אתם מייצגים ארגון מממן, ארגון לא־ממשלתי, מוסד ציבורי או גוף פרטי המעוניין לתמוך בעבודה הזו, נשמח שתיצרו איתנו קשר.',
       },
       cta: { en: 'Discuss funding opportunities', he: 'לדיון על אפשרויות מימון' },
       mail: {

@@ -37,7 +37,6 @@ const en = {
     closeMenu: 'Close menu',
     languageSwitcherLabel: 'Language',
     /** Accessible label for the link that switches TO the given language. */
-    switchToLanguage: { en: 'Switch to English', he: 'Switch to Hebrew' },
     contactHeading: 'Contact',
     emailLinkLabel: 'Email Daphi',
     copyright: '© Daphi',

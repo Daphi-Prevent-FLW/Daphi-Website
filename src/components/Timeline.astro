@@ -154,7 +154,8 @@ const items = timeline.map((item) => ({
     color: var(--color-on-strong);
   }
   .timeline__flag {
-    padding: 0 var(--space-2xs);
+    padding-block: 0;
+    padding-inline: var(--space-2xs);
     border: var(--border-width) solid currentColor;
     border-radius: var(--radius-s);
     font-weight: 700;
@@ -171,6 +172,13 @@ const items = timeline.map((item) => ({
   }
   .timeline__text {
     margin-block-end: 0;
+  }
+  /* Links inside the dark current-milestone panel need the light colour (no dark-on-dark). */
+  .timeline__item[data-current] .timeline__link {
+    color: var(--color-on-strong);
+  }
+  .timeline__item[data-current] .timeline__link:focus-visible {
+    outline-color: var(--color-on-strong);
   }
   .timeline__link {
     display: inline-flex;

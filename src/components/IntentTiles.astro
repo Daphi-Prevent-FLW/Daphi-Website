@@ -129,4 +129,9 @@ const { heading, tiles, id = 'intent' } = Astro.props;
   .tile:focus-visible {
     outline-offset: 4px;
   }
+  @media (prefers-reduced-motion: reduce) {
+    .tile:hover {
+      transform: none;
+    }
+  }
 </style>

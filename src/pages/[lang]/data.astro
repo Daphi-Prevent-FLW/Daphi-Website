@@ -5,6 +5,7 @@
 //   #share-data           share existing data (mailto); destination of the Partnerships data tile
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import PageHeading from '../../components/PageHeading.astro';
+import JumpNav from '../../components/JumpNav.astro';
 import PlaceholderMark from '../../components/PlaceholderMark.astro';
 import { langStaticPaths, getDictionary, type Lang } from '../../i18n';
 import { buildMailto } from '../../lib/mailto';
@@ -38,11 +39,7 @@ const jumpLinks = [
 <BaseLayout lang={lang} routeId="data">
   <PageHeading title={page.title} lead={page.lead} />
 
-  <nav class="container jump" aria-label={jumpLabel}>
-    <ul>
-      {jumpLinks.map((l) => <li><a href={`#${l.id}`}>{l.label}</a></li>)}
-    </ul>
-  </nav>
+  <JumpNav label={jumpLabel} links={jumpLinks} />
 
   <!-- 1. Explore FLW granular data (platform not deployed) -->
   <section class="container section" id={SECTION_IDS.dataExplore} aria-labelledby="explore-heading">
@@ -107,24 +104,6 @@ const jumpLinks = [
 </BaseLayout>
 
 <style>
-  .jump ul {
-    display: flex;
-    flex-wrap: wrap;
-    gap: var(--space-xs);
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-  .jump a {
-    display: inline-flex;
-    align-items: center;
-    min-block-size: var(--touch-target);
-    padding: var(--space-2xs) var(--space-s);
-    border: var(--border-width) solid var(--color-border);
-    border-radius: var(--radius-m);
-    background: var(--color-surface);
-    color: var(--color-text);
-  }
   .status {
     display: inline-block;
     margin-block-end: var(--space-xs);
@@ -139,7 +118,8 @@ const jumpLinks = [
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
     gap: var(--space-m);
-    margin: var(--space-m) 0 var(--space-s);
+    margin-block: var(--space-m) var(--space-s);
+    margin-inline: 0;
     padding: 0;
     list-style: none;
   }

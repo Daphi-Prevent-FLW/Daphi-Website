@@ -19,7 +19,7 @@
  *   {
  *     id: 'example-person',
  *     status: 'confirmed',
- *     name: { en: 'Example Person', he: 'דוגמה לדוגמה' },
+ *     name: { en: 'Example Person', he: 'שם לדוגמה' },
  *     picture: 'assets/people/example-person.jpg',
  *     linkedin: 'https://www.linkedin.com/in/example',
  *     website: 'https://example.org',

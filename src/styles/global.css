@@ -13,7 +13,7 @@
 html {
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
-  scroll-padding-block-start: var(--header-offset);
+  /* Anchor offset comes from `[id] { scroll-margin-block-start }` only (both would stack). */
   background: var(--color-bg);
 }
 
@@ -34,6 +34,11 @@ body {
 
 main {
   flex: 1 0 auto;
+}
+
+/* main is a programmatic focus target for the skip link (tabindex=-1): no ring on a non-interactive region. */
+main:focus {
+  outline: none;
 }
 
 /* Headings: Secular One for primary headings (single weight: never synthesize bold),

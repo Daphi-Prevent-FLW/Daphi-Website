@@ -38,7 +38,8 @@ const stages = [
 
 <style>
   .chain-figure {
-    margin: var(--space-m) 0;
+    margin-block: var(--space-m);
+    margin-inline: 0;
   }
   .chain {
     display: grid;
@@ -55,7 +56,8 @@ const stages = [
     padding: var(--space-xs) var(--space-s);
     border-block-start: 0.5rem solid var(--color-accent);
     background: var(--color-surface);
-    border-radius: 0 0 var(--radius-s) var(--radius-s);
+    border-end-start-radius: var(--radius-s);
+    border-end-end-radius: var(--radius-s);
   }
   .chain__stage--boundary {
     border-block-start-style: dashed;

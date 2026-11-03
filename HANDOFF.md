@@ -9,7 +9,22 @@ Read this first when continuing in a new session (see the continuation protocol 
 - **Stage 4: Partnerships and Data**: completed 2026-10-26.
 - **Stage 5: About and Acknowledgments**: implemented 2026-10-29, **but NOT build-verified** (the Stage 5 session had no network, so `npm ci`/`astro build`/`astro check` could not run; see sections 4 and 5).
 
+- **Stage 6a: Hebrew polish, accessibility, responsive/CSS fixes**: implemented 2026-11-03 (static edits only; **not build-verified**, see sections 4 and 5).
+
 ## 2. Next stage
+- **Plan change (overrides Part B for the remaining work).** Because of a limited usage budget, the former Stage 6 is split into three shorter stages, each with its own zip:
+
+  | Stage | Focus | Deliverable |
+  | --- | --- | --- |
+  | **6a (DONE)** | Hebrew polish, accessibility fixes, responsive/CSS fixes | `daphi-website-stage6a.zip` |
+  | **6b (next)** | SEO fixes (`x-default`, sitemap config, Open Graph), a new `scripts/check-quality.mjs` for `dist/` with tests, issues list | `daphi-website-stage6.zip` |
+  | **7** | README with the integration guide, outstanding-inputs checklist, config files to reconcile, Cloudflare notes, final report (Part A, section 27) | `daphi-website-stage7.zip` |
+
+- **Before 6b:** run `npm ci && npm run build && npm run check && npm run validate` on a machine with network access and fix whatever Stages 5 and 6a break (neither was built). Report errors to the next session.
+- Stage 6a changes, for orientation: `Header.astro` (switcher `order: 5` on mobile and shown only inside the open menu when JS is on; `max-block-size: 100dvh; overflow-y: auto` while `.menu-open`; header `position: static` when `html:not(.js)` below 70em), `LanguageSwitcher.astro` (no `aria-label`; `ui.switchToLanguage` deleted from `en.ts`/`he.ts`),
+  `global.css` (html `scroll-padding` removed, `main:focus { outline: none }`), `Cite.astro` (bigger hit area), component audit fixes (see section 5), Data page now uses `JumpNav`, Hebrew edits listed in `HEBREW_REVIEW.md` "Stage 6 entries".
+
+## 2b. Older notes on the next stage (kept for reference)
 - **FIRST, before any Stage 6 work:** run `npm ci && npm run build && npm run check && npm run validate` on a machine with network access and fix whatever the Stage 5 code breaks.
   Stage 5 added Astro components/pages that were written against the existing patterns but never compiled (see section 5). Expect small issues at most; do not redo Stage 5 beyond fixing them.
 - **Stage 6: Hebrew polish, accessibility, responsive QA** (optionally merged with Stage 7). Nothing from Stage 6 has been started.
@@ -86,6 +101,12 @@ Read this first when continuing in a new session (see the continuation protocol 
 ## 4. Commands run
 | Command | Result |
 | --- | --- |
+| **Stage 6a session (Node-only, NO NETWORK)** | |
+| `npm ci` (tried once, not retried) | **FAILED** (no network). `astro build`, `astro check`, `npm run build`, and everything that reads `dist/` were **not run** |
+| `npm run test:mailto`, `test:refs` (31 cases), `test:links` (30 cases), `test:stage5` (35 checks), `check:contrast` | passed after the 6a edits (dist-dependent parts skipped: no `dist/`) |
+| `tsc --noEmit` (global TypeScript, strict, temp config outside the project) over `src/i18n/{en,he,index}.ts` | passed: `he.ts` still matches the `Dictionary` type after the Hebrew edits and the removal of `ui.switchToLanguage`. `.astro` files are NOT covered |
+| Browser / Playwright rendering | **not done** (no built site) |
+|  |  |
 | **Stage 5 session (Node 22.22.2 / npm 10.9.7, NO NETWORK)** | |
 | `npm ci` | **FAILED**: `ENOTFOUND registry.npmjs.org`, no npm cache, Astro not installed anywhere. `astro build`, `astro check`, `npm run build` and everything that reads `dist/` could **not be run** |
 | `node scripts/test-acknowledgments.mjs` (`npm run test:stage5`) | passed: 35 checks (conditional rendering incl. invalid values, data validators, timeline rules; most are negative) |
@@ -112,6 +133,12 @@ Earlier sessions (kept for reference; the rows below are from the Stage 4 sessio
 | Playwright + Chromium, Stage 3 | Home and FLW Prevention, EN + HE, 1280 px and 375 px: no horizontal overflow, no console errors; screenshots inspected; citation popover opens on hover; tile destinations; Partnerships tile lands on `#working-with-daphi`; mailto links (EN/HE) read back correctly |
 
 ## 5. Known issues and unverified items
+- **STAGE 6a IS NOT BUILD-VERIFIED** (nothing compiled or rendered). All 6a changes are static edits to `.astro`/CSS/TS/Hebrew strings. Still unverified: `astro build`, `astro check`, browser rendering (mobile menu order/scroll, switcher visibility with and without JS, header static without JS, citation hit area, timeline link colour), screen readers, Safari/Firefox, real touch devices.
+- Stage 6a CSS details worth a visual check: (a) with JS on small screens the switcher appears below the nav only while the menu is open (JS-on desktop is unchanged); (b) with JS off below 70em the switcher is a full-width row below the wrapped nav and the header scrolls away; (c) `Cite` markers use `padding-inline: .5em; margin-inline: -.35em; padding-block: .6em` (the hover background is now taller); (d) `html` no longer has `scroll-padding`, only `[id]` has `scroll-margin` (check anchor offset on Data/About jump links).
+- Stage 6a audit fixes (static review only): reduced-motion rule for the tile hover lift; dark-panel link colour for the current timeline item (it would have been dark-on-dark if a link were ever added); `minmax(0, …)` grid tracks in `SensorSection` and `ReferenceEntry` to prevent overflow at 320px; physical margin/padding shorthands replaced with logical properties in the audited components; `SupplyChain` radius made logical. Data page adopted `JumpNav`.
+- Remaining symmetric physical shorthands outside the audit list (`margin: 0 0 x` / `x 0 0` in `flw-prevention.astro`, `padding: 0 x` in `PlaceholderMark.astro`): harmless in RTL (the horizontal values are 0 or symmetric) but not yet converted to logical longhands.
+- Touch targets: language links and nav links are 44px; `Cite` marker is now larger but its visual size is still small (hit area enlarged only). Not measured in a browser.
+- The Hebrew copy changed in 6a (עמותה → יוזמה ללא מטרות רווח etc.) is unreviewed; see `HEBREW_REVIEW.md` "Stage 6 entries" including the consolidated question list. If Daphi IS a registered amuta, עמותה can be restored.
 - **STAGE 5 IS NOT BUILD-VERIFIED.** No `astro build`, `astro check`, route check, link check, figure check on real output, or browser render was possible. The new `.astro` files (`about.astro`, `acknowledgments.astro`, `Timeline.astro`,
   `AcknowledgmentEntry.astro`, `JumpNav.astro`) were written by following the existing components' patterns and re-read by hand; they have never been compiled. Likeliest failure points if something breaks:
   Astro/TS typing in `AcknowledgmentEntry.astro` / `Timeline.astro` (`astro check`), a scoped-CSS selector, or a link/id rule in `check-links.mjs` (all ids on About were checked by hand for collisions with Header/Footer).
@@ -119,7 +146,7 @@ Earlier sessions (kept for reference; the rows below are from the Stage 4 sessio
 - Stage 5 visuals are unseen: timeline line/marker alignment in LTR and RTL, the current-milestone panel, acknowledgment rows (no real data to test pictures/links with: the logic is unit-tested, the rendering is not), jump links, phones.
 - Timeline: all history is placeholder and undated; the only confirmed items are the current sensor milestone and the planned (not deployed) data platform. Adding the planned platform to the timeline was a judgement call (it states only what the brief says: planned, not deployed, no date); delete the item in `src/data/timeline.mjs` if Daphi prefers.
 - Acknowledgment pictures use `alt=""` (decorative, name adjacent); icon links use `aria-label`. Not screen-reader tested.
-- `JumpNav` duplicates the Data page's inline "On this page" markup/CSS; the Data page was deliberately left untouched in Stage 5 (can adopt `JumpNav` in Stage 6).
+- (Done in 6a) The Data page now uses `JumpNav` instead of its duplicated markup.
 - **Stage 4 not verified**: keyboard walk-through beyond one Tab step, screen readers, Safari/Firefox, real touch devices; mail clients opening the mailto links (only the URL contents were read back). Hebrew copy of both pages is new and unreviewed (`HEBREW_REVIEW.md`, Stage 4 entries).
 - The Hebrew missing-doc placeholder contains a Latin identifier and path inside RTL text; bidi order looked acceptable in a screenshot but is flagged for review.
 - The link validator uses regex-based HTML parsing (tested, incl. unquoted attributes); it is not a full HTML parser.
@@ -131,7 +158,7 @@ Earlier sessions (kept for reference; the rows below are from the Stage 4 sessio
 - Home and FLW Prevention no longer use `StubPage`. Stage 3 browser checks did NOT cover: keyboard walk-through of the tiles, the mobile menu, screen readers, Safari/Firefox, real touch devices.
 - The `infographic.alt` text is generic (the image is not known yet); update it when the infographic is added.
 - The Hebrew copy of both pages is new and unreviewed (see `HEBREW_REVIEW.md`, Stage 3 entries).
-- Tab order on mobile while the menu is open: the nav links come before the language switcher in the DOM, but the switcher is visually in the top row. Review in Stage 6.
+- (Fixed in 6a, pending browser check) Tab order on mobile: the language switcher now comes after the nav visually and in the DOM.
 - `hreflang`/OG URLs are root-relative while `siteUrl` is unset (valid locally; search engines want absolute URLs, so set `siteUrl` for production).
 - No sitemap is generated until `siteUrl` is set (the sitemap integration needs absolute URLs); `robots.txt` has no Sitemap line yet.
 - CSP in `public/_headers` allows inline scripts; can be tightened later.

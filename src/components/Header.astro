@@ -141,7 +141,7 @@ const labels = {
     border-block-end: var(--border-width) solid var(--color-border);
   }
 
-  /* Mobile-first: logo, switcher and toggle on the first row; nav on its own row. */
+  /* Mobile-first: logo and toggle on the first row; nav on its own row; switcher below the nav. */
   .header-inner {
     display: flex;
     flex-wrap: wrap;
@@ -201,8 +201,10 @@ const labels = {
   .menu-open .menu-toggle__icon > span { opacity: 0; }
   .menu-open .menu-toggle__icon::after { transform: translateY(-6px) rotate(-45deg); }
 
+  /* Mobile: the switcher comes after the nav both visually and in the DOM (order 5, below the nav). */
   .header-inner > :global(.lang-switcher) {
-    order: 3;
+    order: 5;
+    flex-basis: 100%;
   }
   .site-nav {
     flex-basis: 100%;
@@ -239,6 +241,19 @@ const labels = {
   @media (max-width: 69.999em) {
     :global(.js) .site-nav { display: none; padding-block-end: var(--space-xs); }
     :global(.js) .menu-open .site-nav { display: block; }
+    /* With JS the switcher lives only inside the open menu panel (the footer has one too). */
+    :global(.js) .header-inner > :global(.lang-switcher) { display: none; }
+    :global(.js) .menu-open .header-inner > :global(.lang-switcher) {
+      display: block;
+      padding-block-end: var(--space-xs);
+    }
+    /* A short landscape viewport: let the open panel scroll instead of overflowing. */
+    :global(.js) .site-header.menu-open {
+      max-block-size: 100dvh;
+      overflow-y: auto;
+    }
+    /* Without JS the wrapped nav would make a sticky header very tall: let it scroll away. */
+    :global(html:not(.js)) .site-header { position: static; }
     :global(.js) .site-nav ul { flex-direction: column; gap: 0; }
     :global(.js) .site-nav a {
       inline-size: 100%;
@@ -257,6 +272,6 @@ const labels = {
     .site-nav { flex: 1 1 auto; flex-basis: auto; order: 2; }
     .site-nav ul { justify-content: flex-end; }
     :global(.js) .menu-toggle { display: none; }
-    .header-inner > :global(.lang-switcher) { order: 3; }
+    .header-inner > :global(.lang-switcher) { order: 3; flex-basis: auto; }
   }
 </style>

@@ -131,9 +131,10 @@ for (const b of backlinks) totals.set(b.base, (totals.get(b.base) ?? 0) + 1);
   }
   .ref__fields {
     display: grid;
-    grid-template-columns: max-content 1fr;
+    grid-template-columns: max-content minmax(0, 1fr);
     gap: var(--space-3xs) var(--space-s);
-    margin: 0 0 var(--space-xs);
+    margin-block: 0 var(--space-xs);
+    margin-inline: 0;
     font-size: var(--step--1);
   }
   .ref__fields dt {

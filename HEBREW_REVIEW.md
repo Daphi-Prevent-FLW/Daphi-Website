@@ -129,7 +129,7 @@ Mixed-language handling: the email address is wrapped in `<bdi dir="ltr">`; keep
 | --- | --- |
 | `partnerships.working.note`, `data.measurement.note` | The "no guarantee" wording; check it is firm but not cold. |
 | Mail bodies (`*.mailBody`) | Slash forms (מעוניין/ת, מבקש/ת, משתמש/ת) as in Stage 3; consider neutral phrasing. |
-| `data.measurement.text` | "ואנחנו נחזור אליכם ונגיד אם אפשר לבצע מדידה" is a soft commitment to reply; confirm Daphi is comfortable with it (same in English). |
+| `data.measurement.text` | "ואנחנו נחזור אליכם ונעדכן אתכם אם אפשר לבצע מדידה" (Stage 6 wording; originally ונגיד) is a soft commitment to reply; confirm Daphi is comfortable with it (same in English). |
 
 ### D. Mixed-direction / awkward strings
 | Where | Note |
@@ -169,3 +169,33 @@ Mixed-language handling: the email address is wrapped in `<bdi dir="ltr">`; keep
 | --- | --- |
 | Acknowledgment names | Rendered inside `<bdi>`, so a Latin name inside Hebrew text keeps its order. Check with real names. |
 | Icon links' `aria-label` | Built as "{label}: {name} {newTab}" (e.g. `אתר אינטרנט: … (נפתח בלשונית חדשה)`); check how a Hebrew screen reader reads it. |
+
+## Stage 6 entries (Hebrew polish; all changes made by the model, still unreviewed)
+
+### A. Changes made in Stage 6a
+| # | Where | Before | After | Why | Alternatives |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `meta.defaultDescription`, `home.hero.d`, `pages.home.description`, `pages.home.lead` | דפי היא **עמותה** הפועלת… | דפי היא **יוזמה ללא מטרות רווח** הפועלת… | עמותה names a registered legal form (amuta) that we have no source for and must not invent. English \"nonprofit\" is unchanged. The noun is feminine, matching the feminine verbs used for דפי (הפועלת, עוזרת, מפתחת). | ארגון ללא מטרות רווח (masculine, would break agreement with the other feminine verbs); ארגון non-profit. If Daphi *is* a registered amuta, עמותה may be restored (needs confirmation from Daphi, not a language decision). |
+| 2 | `data.measurement.text` | …ונגיד אם אפשר לבצע מדידה… | …ונעדכן אתכם אם אפשר לבצע מדידה ומה היא כוללת | \"נגיד\" reads as colloquial \"let's say\"/\"we'll tell\"; the rest of the page is neutral-polite. | נודיע לכם, נחזור אליכם עם תשובה אם… |
+| 3 | `partnerships.working.rolesHeading` | נשמח לשמוע מ | ממי נשמח לשמוע | The heading ended in a dangling prefix (מ) that was meant to attach to each list item; the list items are bare nouns (`<h3>` followed by `<ul>`, no per-item prefix), so it could not work. The new heading is a complete phrase that the list answers. | We would like to hear from: אנחנו מחפשים: / מי אנחנו מחפשים. English heading is unchanged. |
+| 4 | `pages.about.description` | …ולוח הזמנים של הפרויקטים | …וציר הזמן של הפרויקטים | Page heading and jump link say ציר הזמן; the meta description said לוח הזמנים (schedule). Made consistent. | See open question on ציר זמן vs אבני דרך. |
+| 5 | `data.explore.notify.text`, `data.explore.note` | מייל / הודעת מייל | דוא״ל / הודעת דוא״ל | The rest of the site (`ui.emailLinkLabel`, `acknowledgments.email`) uses דוא״ל; מייל was a stray colloquial form. | Use מייל/אימייל everywhere if the owner prefers the colloquial register (one global choice). |
+| 6 | `sensor.mjs` `funding.about.body` | …אנא צרו קשר. | …נשמח שתיצרו איתנו קשר. | \"אנא\" is formal/stiff next to the otherwise warm second-person plural imperatives. | צרו איתנו קשר (plain imperative). |
+| 7 | `about.story.paragraphs[0]` (placeholder) | מאין צמחה דפי | כיצד צמחה דפי | \"מאין\" is literary. Placeholder text, disappears with the real copy. | איך התחילה דפי |
+| 8 | `acknowledgments.mjs` doc comment example | דוגמה לדוגמה | שם לדוגמה | Comment-only example string was nonsensical. No effect on the site. | n/a |
+
+Checked and left unchanged: `sensor.mjs` (headings, milestone, both funding appeals, details labels), `timeline.mjs`, `references.mjs`, `stat-placeholders.mjs`, the acknowledgments placeholder records, and every other string in `he.ts`. They read acceptably; the recurring questions are collected in section B. `he.ts` was type-checked against the `Dictionary` type after the edits (see HANDOFF).
+Stage 6a also removed `ui.switchToLanguage` (Hebrew and English): the language switcher links no longer use an `aria-label`, so the strings were unused.
+
+### B. Consolidated open questions for the native speaker
+1. **אובדן vs בזבוז**: the site pairs אובדן מזון (loss, earlier in the chain) with בזבוז מזון (waste, later). Confirm these are the accepted pair for FLW in Hebrew, or whether Israeli sources use another pair (e.g. פחת מזון, הפסדי מזון, פסולת מזון). Also confirm the short forms used in places (e.g. `sensor.mjs` heading \"מניעת בזבוז מזון\" alone).
+2. **מיגור** (\"eradicate/eliminate\") in `meta.defaultDescription`, `home.hero.d`, `pages.home.description/lead`: strong, may over-promise. Alternatives: צמצום, מניעה, מאבק באובדן ובזבוז מזון.
+3. **\"Granular\"** is rendered מפורטים (\"detailed\") for FLW data. If there is an established term (e.g. נתונים ברמת פירוט גבוהה, נתונים גרנולריים) it should replace it consistently on Home, Partnerships, Data, timeline.
+4. **Slash gender forms** in mail bodies and one placeholder (מתעניין/ת, מעוניין/ת, מבקש/ת, משתמש/ת, מייצג/ת, שם התורם/ת): keep, or use neutral phrasing (e.g. \"אשמח לשמוע\" is already neutral; \"אני מבקש/ת\" could become \"בקשתי\"/\"ברצוני\")?
+5. **יצירת קשר vs צרו קשר vs דברו איתנו**: the footer/`ui.contactHeading` use the noun יצירת קשר, About uses the imperative צרו קשר, Data uses דברו איתנו. Decide whether headings, links and CTAs should follow one pattern.
+6. **Feminine/masculine treatment of דפי**: the site treats דפי as feminine (הפועלת, מפתחת, עוזרת, משתפת פעולה, \"כיצד דפי יכולה\"). Confirm. If Daphi prefers masculine or a plural/organisation form, every verb agreeing with דפי changes (grep for מפתחת, הפועלת, עובדת, מתכננת, משתפת, מקבלת, יכולה).
+7. **ציר הזמן vs אבני דרך** for the About timeline heading (also אבן הדרך הנוכחית).
+8. **Email register**: דוא״ל (used now) vs אימייל/מייל.
+9. **Register overall**: 2nd person plural (פנו, כתבו, ספרו) is used throughout; confirm that this is the desired tone for a website of this kind.
+10. **`rolesHeading`** \"ממי נשמח לשמוע\" (new): does it read naturally above a list of professions?
+11. Earlier-stage questions still open: tone of the \"no guarantee\" notes, the soft commitment in `data.measurement.text` (now \"נעדכן אתכם\"), bidi order of `data.explore.doc.missing`, Latin brand name LinkedIn inside Hebrew, screen-reader reading of icon-link `aria-label`s.

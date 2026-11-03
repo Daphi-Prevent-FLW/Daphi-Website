@@ -61,7 +61,11 @@ const summary = [title, organization, ref.year].filter(Boolean).join(' · ');
     /* Superscript without changing the line height. */
     position: relative;
     inset-block-start: -0.45em;
-    padding-inline: 0.15em;
+    /* Larger hit area without changing line layout: padding minus the negative margin keeps the
+       original 0.15em inline footprint; block padding on an inline box adds hit area only. */
+    padding-inline: 0.5em;
+    margin-inline: -0.35em;
+    padding-block: 0.6em;
     border-radius: 3px;
   }
   .cite__link:hover,

@@ -18,9 +18,9 @@
       "persist": true
     },
     "traces": {
-        "enabled": false,
-        "head_sampling_rate": 1,
-        "persist": true
+      "enabled": false,
+      "head_sampling_rate": 1,
+      "persist": true
     }
   }
 }

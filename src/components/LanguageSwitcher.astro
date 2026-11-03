@@ -15,13 +15,13 @@ interface Props {
 const { lang, routeId } = Astro.props;
 const dict = getDictionary(lang);
 
+// The visible name (own language, with lang/hreflang) is the accessible name: no aria-label (WCAG 2.5.3).
 // Names are shown in their own language; lang= on each link is set accordingly.
 const items = LANGS.map((code) => ({
   code,
   name: getDictionary(code).lang.nativeName,
   href: routePath(code, routeId),
   current: code === lang,
-  label: dict.ui.switchToLanguage[code],
 }));
 ---
 
@@ -35,7 +35,6 @@ const items = LANGS.map((code) => ({
             lang={item.code}
             hreflang={item.code}
             data-lang-switch
-            aria-label={item.current ? undefined : item.label}
             aria-current={item.current ? 'true' : undefined}
             class:list={{ current: item.current }}
           >
