@@ -60,8 +60,11 @@ for (const { lang, route, file, label } of pages) {
   if (h1s.length !== 1) err(label, `expected exactly 1 <h1>, found ${h1s.length}`);
   if (!/<title>[^<]+<\/title>/i.test(html)) err(label, 'missing/empty <title>');
   if (!/<meta name="?description"? content="?[^">]+/i.test(html)) err(label, 'missing meta description');
+  // hreflang must be absolute, so it exists only when siteUrl is set (SeoHead.astro); full consistency is in check-quality.
+  const hasHreflang = (code) => new RegExp(`<link rel="?alternate"? hreflang="?${code}"?`, 'i').test(html);
   for (const code of [...LANGS, 'x-default']) {
-    if (!new RegExp(`<link rel="?alternate"? hreflang="?${code}"?`, 'i').test(html)) err(label, `missing hreflang="${code}"`);
+    if (siteConfig.siteUrl && !hasHreflang(code)) err(label, `missing hreflang="${code}"`);
+    if (!siteConfig.siteUrl && hasHreflang(code)) err(label, `hreflang="${code}" present although siteUrl is unset`);
   }
   if (!/class="?skip-link/.test(html) || !/href="?#main/.test(html)) err(label, 'missing skip link');
   if (!/<main\b[^>]*\bid="?main"?/.test(html)) err(label, 'missing <main id="main">');
@@ -101,5 +104,5 @@ if (errors.length) {
 }
 console.log(
   `Route check passed: ${pages.length} localized pages (${LANGS.join(', ')}) + root, 404 and static files verified; ` +
-    'lang/dir, headings, metadata, hreflang, skip links, mailto format and internal links/fragments OK.',
+    'lang/dir, headings, metadata, hreflang (only with siteUrl), skip links, mailto format and internal links/fragments OK.',
 );

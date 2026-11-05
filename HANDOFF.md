@@ -106,6 +106,7 @@ Read this first when continuing in a new session (see the continuation protocol 
 | --- | --- |
 | **Stage 6b session (Node 22.23.4, NO WORKING NETWORK)** | |
 | Owner's build-error paste | **not supplied** (the prompt still contained the unfilled "[PASTE ...]" placeholder), so no build fixes were made |
+| **Owner's Cloudflare build log (after 6b)** | `npm ci` OK (282 packages), `astro build` OK (16 pages, `/robots.txt` emitted, so BLD-02 compile risk is resolved), `validate-refs` OK; **`check-routes` FAILED**: it still required hreflang on every page. Fixed after the log: it now requires hreflang/x-default only when `siteUrl` is set and rejects it when unset. `check-links` never ran (the build stopped); rerun is needed |
 | `npm ci` (tried once, not retried) | **FAILED** (npm crashed with network errors; a partial `node_modules` without Astro was removed). `astro build`, `astro check`, `npm run build`, `npm run validate` and every check on a real `dist/` were **not run** |
 | `check:contrast`, `test:mailto`, `test:refs`, `test:links`, `test:stage5`, `validate-refs.mjs` (registry only) | passed after the 6b edits |
 | `npm run test:quality` | passed: 107 tests on SYNTHETIC fixtures (not the real build); it first caught two bugs in the new checker (canonical/alternate `<link>` flagged as external; `<script src>` invisible to the scanner), both fixed |
