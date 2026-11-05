@@ -10,6 +10,7 @@ Read this first when continuing in a new session (see the continuation protocol 
 - **Stage 5: About and Acknowledgments**: implemented 2026-10-29, **but NOT build-verified** (the Stage 5 session had no network, so `npm ci`/`astro build`/`astro check` could not run; see sections 4 and 5).
 
 - **Stage 6a: Hebrew polish, accessibility, responsive/CSS fixes**: implemented 2026-11-03 (static edits only; **not build-verified**, see sections 4 and 5).
+- **Stage 6b: SEO fixes, `check-quality`, issues list**: implemented 2026-11-05 (**not build-verified**; see section 4 and `ISSUES.md`). Deliverable `daphi-website-stage6.zip`.
 
 ## 2. Next stage
 - **Plan change (overrides Part B for the remaining work).** Because of a limited usage budget, the former Stage 6 is split into three shorter stages, each with its own zip:
@@ -17,10 +18,12 @@ Read this first when continuing in a new session (see the continuation protocol 
   | Stage | Focus | Deliverable |
   | --- | --- | --- |
   | **6a (DONE)** | Hebrew polish, accessibility fixes, responsive/CSS fixes | `daphi-website-stage6a.zip` |
-  | **6b (next)** | SEO fixes (`x-default`, sitemap config, Open Graph), a new `scripts/check-quality.mjs` for `dist/` with tests, issues list | `daphi-website-stage6.zip` |
+  | **6b (DONE)** | SEO fixes (`x-default`, sitemap config, Open Graph), a new `scripts/check-quality.mjs` for `dist/` with tests, issues list | `daphi-website-stage6.zip` |
   | **7** | README with the integration guide, outstanding-inputs checklist, config files to reconcile, Cloudflare notes, final report (Part A, section 27) | `daphi-website-stage7.zip` |
 
-- **Before 6b:** run `npm ci && npm run build && npm run check && npm run validate` on a machine with network access and fix whatever Stages 5 and 6a break (neither was built). Report errors to the next session.
+- **Stage 7 must do:** (1) FIRST run `npm ci && npm run build && npm run check && npm run validate` with network and fix what breaks (nothing since Stage 4 has compiled; the owner's error output was NOT supplied for 6b); especially verify the 6b items in `ISSUES.md` BLD-02/BLD-03 and run `npm run check:quality -- --require-dist` on the real `dist/`; once it is green, add it to `npm run build`. (2) Write the README integration guide, outstanding-inputs checklist, config files to reconcile (now including `src/pages/robots.txt.ts`, `src/config/site-url.mjs`, the sitemap `i18n` option), Cloudflare notes, final report (Part A, section 27). (3) Keep `ISSUES.md` current. Do not change copy or design.
+- **Stage 6b changes, for orientation:** `src/config/site-url.mjs` (`normalizeSiteUrl`: '' = unset, bare http(s) origin otherwise, throws on a typo); `SeoHead.astro` (siteUrl set: absolute canonical + hreflang en/he + `x-default` -> `/` + og:url + og:image only if a raster image exists; unset: **none** of those, because hreflang/OG URLs must be absolute and relative ones are invalid; always: title, description, og:type/site_name/title/description/locale/locale:alternate, twitter:card/title/description); `pages/index.astro` (entry page: same rules, `x-default` now `/` instead of `/en/`, OG tags added); `astro.config.mjs` (sitemap only when siteUrl is set, with `i18n` locales `en`/`he`); `public/robots.txt` **deleted** and replaced by the endpoint `src/pages/robots.txt.ts` (Sitemap line only when siteUrl is set); `scripts/check-quality.mjs` + `scripts/lib/quality-core.mjs` + `scripts/test-check-quality.mjs` (107 synthetic tests, `npm run check:quality` / `test:quality`, both in `validate`; NOT in `build` because it never ran on real output); `list-placeholders.mjs` reports the missing og image; `README.md` three small factual fixes. `x-default` = language entry page because Part A names no default language (decision recorded in `ISSUES.md` SEO-02). No JSON-LD (SEO-04). 404 already had `noindex`.
+- **Before 6b (historical):** run `npm ci && npm run build && npm run check && npm run validate` on a machine with network access and fix whatever Stages 5 and 6a break (neither was built). Report errors to the next session.
 - Stage 6a changes, for orientation: `Header.astro` (switcher `order: 5` on mobile and shown only inside the open menu when JS is on; `max-block-size: 100dvh; overflow-y: auto` while `.menu-open`; header `position: static` when `html:not(.js)` below 70em), `LanguageSwitcher.astro` (no `aria-label`; `ui.switchToLanguage` deleted from `en.ts`/`he.ts`),
   `global.css` (html `scroll-padding` removed, `main:focus { outline: none }`), `Cite.astro` (bigger hit area), component audit fixes (see section 5), Data page now uses `JumpNav`, Hebrew edits listed in `HEBREW_REVIEW.md` "Stage 6 entries".
 
@@ -101,6 +104,16 @@ Read this first when continuing in a new session (see the continuation protocol 
 ## 4. Commands run
 | Command | Result |
 | --- | --- |
+| **Stage 6b session (Node 22.23.4, NO WORKING NETWORK)** | |
+| Owner's build-error paste | **not supplied** (the prompt still contained the unfilled "[PASTE ...]" placeholder), so no build fixes were made |
+| `npm ci` (tried once, not retried) | **FAILED** (npm crashed with network errors; a partial `node_modules` without Astro was removed). `astro build`, `astro check`, `npm run build`, `npm run validate` and every check on a real `dist/` were **not run** |
+| `check:contrast`, `test:mailto`, `test:refs`, `test:links`, `test:stage5`, `validate-refs.mjs` (registry only) | passed after the 6b edits |
+| `npm run test:quality` | passed: 107 tests on SYNTHETIC fixtures (not the real build); it first caught two bugs in the new checker (canonical/alternate `<link>` flagged as external; `<script src>` invisible to the scanner), both fixed |
+| `node scripts/check-quality.mjs` without `dist/` | skips with a message, exit 0; with `--require-dist` exit 1 (verified) |
+| `node scripts/list-placeholders.mjs` | runs; reports siteUrl and og image as unset |
+| `tsc` / `astro check` over the edited `.astro`/`.ts` files | **not run** (Astro not installed) |
+| Browser / Playwright | **not done** |
+|  |  |
 | **Stage 6a session (Node-only, NO NETWORK)** | |
 | `npm ci` (tried once, not retried) | **FAILED** (no network). `astro build`, `astro check`, `npm run build`, and everything that reads `dist/` were **not run** |
 | `npm run test:mailto`, `test:refs` (31 cases), `test:links` (30 cases), `test:stage5` (35 checks), `check:contrast` | passed after the 6a edits (dist-dependent parts skipped: no `dist/`) |
@@ -133,6 +146,8 @@ Earlier sessions (kept for reference; the rows below are from the Stage 4 sessio
 | Playwright + Chromium, Stage 3 | Home and FLW Prevention, EN + HE, 1280 px and 375 px: no horizontal overflow, no console errors; screenshots inspected; citation popover opens on hover; tile destinations; Partnerships tile lands on `#working-with-daphi`; mailto links (EN/HE) read back correctly |
 
 ## 5. Known issues and unverified items
+- **Full list with ids: `ISSUES.md`.** The items below are the detailed notes it links to.
+- **STAGE 6b IS NOT BUILD-VERIFIED** (see `ISSUES.md` BLD-01..03). Never compiled: `SeoHead.astro`, `pages/index.astro`, `pages/robots.txt.ts`, the `@astrojs/sitemap` `i18n` option. `check-quality` has only run against synthetic fixtures.
 - **STAGE 6a IS NOT BUILD-VERIFIED** (nothing compiled or rendered). All 6a changes are static edits to `.astro`/CSS/TS/Hebrew strings. Still unverified: `astro build`, `astro check`, browser rendering (mobile menu order/scroll, switcher visibility with and without JS, header static without JS, citation hit area, timeline link colour), screen readers, Safari/Firefox, real touch devices.
 - Stage 6a CSS details worth a visual check: (a) with JS on small screens the switcher appears below the nav only while the menu is open (JS-on desktop is unchanged); (b) with JS off below 70em the switcher is a full-width row below the wrapped nav and the header scrolls away; (c) `Cite` markers use `padding-inline: .5em; margin-inline: -.35em; padding-block: .6em` (the hover background is now taller); (d) `html` no longer has `scroll-padding`, only `[id]` has `scroll-margin` (check anchor offset on Data/About jump links).
 - Stage 6a audit fixes (static review only): reduced-motion rule for the tile hover lift; dark-panel link colour for the current timeline item (it would have been dark-on-dark if a link were ever added); `minmax(0, …)` grid tracks in `SensorSection` and `ReferenceEntry` to prevent overflow at 320px; physical margin/padding shorthands replaced with logical properties in the audited components; `SupplyChain` radius made logical. Data page adopted `JumpNav`.
@@ -159,12 +174,11 @@ Earlier sessions (kept for reference; the rows below are from the Stage 4 sessio
 - The `infographic.alt` text is generic (the image is not known yet); update it when the infographic is added.
 - The Hebrew copy of both pages is new and unreviewed (see `HEBREW_REVIEW.md`, Stage 3 entries).
 - (Fixed in 6a, pending browser check) Tab order on mobile: the language switcher now comes after the nav visually and in the DOM.
-- `hreflang`/OG URLs are root-relative while `siteUrl` is unset (valid locally; search engines want absolute URLs, so set `siteUrl` for production).
-- No sitemap is generated until `siteUrl` is set (the sitemap integration needs absolute URLs); `robots.txt` has no Sitemap line yet.
+- (Changed in 6b) While `siteUrl` is unset the head emits no hreflang, canonical, og:url or og:image (previously root-relative); no sitemap and no `Sitemap:` line (`robots.txt` is generated by `src/pages/robots.txt.ts`). Set `siteUrl` for production.
 - CSP in `public/_headers` allows inline scripts; can be tightened later.
 - `fonts.css` uses root-absolute `/fonts/...` URLs: fine for deployment at the domain root; revisit if a `base` path is ever configured.
 - Stub notice text contains the `[PLACEHOLDER]` source prefix as visible text next to the badge (intentional until Stage 2 formalizes rendering).
 
 ## 6. Outstanding inputs (do not block on these)
-Official favicon (the EN/HE logos and email icon were added to `public/assets/brand/` by the owner before Stage 2; the site picks them up automatically); production domain; Google Doc URL for the future platform; application URL; fact-checked statistics and real references (supplied by the owner);
+Raster Open Graph image (`public/assets/brand/og-image.png|jpg|webp`, 1200x630); confirmation of the default language (SEO-02); official favicon (the EN/HE logos and email icon were added to `public/assets/brand/` by the owner before Stage 2; the site picks them up automatically); production domain; Google Doc URL for the future platform; application URL; fact-checked statistics and real references (supplied by the owner);
 verified sensor details and stage; About text (story, how we work) and real timeline history with dates; real acknowledgment names/photos/links; prevention-process infographic; native-speaker review of Hebrew.

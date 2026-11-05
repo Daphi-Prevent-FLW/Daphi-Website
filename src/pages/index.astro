@@ -2,11 +2,13 @@
 /**
  * Root "/" = language entry page. Works with no JavaScript (two plain links).
  * Progressive enhancement: if the browser's preferred language is Hebrew it goes to /he/,
- * otherwise it stays here and offers the choice. English is the default language (/en/).
+ * otherwise it stays here and offers the choice. This page is the hreflang x-default (see SeoHead.astro): the entry
+ * page is where visitors without a matching language land, so no default language has to be chosen.
  * Documented in README ("Routing and localization").
  */
 import '../styles/global.css';
 import { siteConfig } from '../config/site.config.mjs';
+import { normalizeSiteUrl } from '../config/site-url.mjs';
 import { LANGS, getDictionary } from '../i18n';
 import { routePath } from '../lib/routes';
 import { withBase } from '../lib/routes';
@@ -17,7 +19,7 @@ const options = LANGS.map((code) => ({
   tagline: getDictionary(code).pages.home.title,
   href: routePath(code, 'home'),
 }));
-const site = siteConfig.siteUrl ? siteConfig.siteUrl.replace(/\/+$/, '') : '';
+const site = normalizeSiteUrl(siteConfig.siteUrl);
 ---
 
 <!doctype html>
@@ -30,9 +32,15 @@ const site = siteConfig.siteUrl ? siteConfig.siteUrl.replace(/\/+$/, '') : '';
     <meta name="theme-color" content="#f9f6e9" />
     <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
     <link rel="preload" href={withBase('fonts/secular-one-latin-400-normal.woff2')} as="font" type="font/woff2" crossorigin />
-    {options.map((o) => <link rel="alternate" hreflang={o.code} href={site + o.href} />)}
-    <link rel="alternate" hreflang="x-default" href={site + routePath('en', 'home')} />
+    {site && options.map((o) => <link rel="alternate" hreflang={o.code} href={site + o.href} />)}
+    {site && <link rel="alternate" hreflang="x-default" href={site + withBase('')} />}
     {site && <link rel="canonical" href={site + withBase('')} />}
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Daphi" />
+    <meta property="og:title" content="Daphi | דפי" />
+    <meta property="og:description" content="Daphi is a nonprofit working to eliminate food loss and waste. Choose a language: English or Hebrew." />
+    {site && <meta property="og:url" content={site + withBase('')} />}
+    <meta name="twitter:card" content="summary" />
   </head>
   <body>
     <main id="main" class="entry">

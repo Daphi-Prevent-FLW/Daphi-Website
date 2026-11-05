@@ -38,10 +38,18 @@ section(
   statPlaceholders.map((s) => `${s.id} (page ${s.page}, section ${s.section}, cites ${s.cite})`),
 );
 
+function hasOgImage() {
+  const configured = (siteConfig.assets?.ogImage ?? '').replace(/^\/+/, '');
+  if (!configured) return false;
+  const candidates = path.extname(configured) ? [configured] : ['.png', '.webp', '.jpg', '.jpeg'].map((e) => configured + e);
+  return candidates.some((c) => fs.existsSync(path.join(root, 'public', c)));
+}
+
 section(
   'Configuration values still unset (src/config/site.config.mjs)',
   [
-    ['siteUrl', siteConfig.siteUrl, 'production domain: no canonical URLs or sitemap until set'],
+    ['siteUrl', siteConfig.siteUrl, 'production domain: no canonical, hreflang/x-default, og:url, sitemap or robots.txt Sitemap line until set'],
+    ['ogImage (file in public/assets/brand/)', hasOgImage() ? 'present' : '', 'no og:image / twitter:image (needs a real raster image, ideally 1200x630, never invented; also needs siteUrl to be emitted)'],
     ['futurePlatformDocUrl', siteConfig.futurePlatformDocUrl, 'Data page shows an editorial placeholder instead of the "Read more about the future platform" link'],
     ['app.url', siteConfig.app.url, 'application gateway stays on "Coming soon"'],
   ]

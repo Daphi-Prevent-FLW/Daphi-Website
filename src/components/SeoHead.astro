@@ -1,10 +1,18 @@
 ---
 /**
- * <head> contents: title, description, canonical (only when siteUrl is configured),
- * hreflang alternates + x-default, Open Graph, favicon, font preloads.
- * Without siteUrl, hreflang/OG URLs are root-relative (valid for local testing; set siteUrl for production).
+ * <head> contents: title, description, favicon, font preloads, Open Graph, Twitter.
+ *
+ * Behaviour depends on siteUrl (src/config/site.config.mjs):
+ *  - SET:   absolute canonical, absolute hreflang alternates (one per language + x-default), og:url, og:image (only if a
+ *           raster image exists at assets.ogImage).
+ *  - UNSET: NO canonical, NO hreflang/x-default, NO og:url, NO og:image. Reason: all of these must be absolute URLs;
+ *           root-relative values are invalid for hreflang and ignored or misread by crawlers, so omitting them is the
+ *           only correct output. Title, description, og:title/description/locale/type/site_name and robots stay.
+ * x-default points at the language entry page ("/"), which presents the choice of language (README, "Routing and
+ * localization"): Part A does not name a default language, so none is assumed here.
  */
 import { siteConfig } from '../config/site.config.mjs';
+import { normalizeSiteUrl } from '../config/site-url.mjs';
 import { LANGS, getDictionary, type Lang } from '../i18n';
 import { resolveBrandAsset } from '../lib/brand';
 import { routePath, rootPath, withBase, type RouteId } from '../lib/routes';
@@ -17,15 +25,17 @@ interface Props {
 }
 const { lang, routeId, title, description } = Astro.props;
 
-const site = siteConfig.siteUrl ? siteConfig.siteUrl.replace(/\/+$/, '') : '';
-const abs = (path: string) => (site ? site + path : path);
+const site = normalizeSiteUrl(siteConfig.siteUrl);
+const abs = (path: string) => site + path;
 
 const selfPath = routePath(lang, routeId);
 const canonical = site ? abs(selfPath) : null;
-const alternates = LANGS.map((code) => ({ code, href: abs(routePath(code, routeId)) }));
-const xDefault = abs(rootPath());
+const alternates = site ? LANGS.map((code) => ({ code, href: abs(routePath(code, routeId)) })) : [];
+const xDefault = site ? abs(rootPath()) : null;
 
-const og = resolveBrandAsset(siteConfig.assets.ogImage);
+// Open Graph crawlers do not render SVG: only use a raster image, and only with an absolute URL.
+const ogAsset = resolveBrandAsset(siteConfig.assets.ogImage);
+const og = site && ogAsset && /\.(png|jpe?g|webp)$/i.test(ogAsset.src) ? ogAsset : null;
 const dict = getDictionary(lang);
 const otherLocales = LANGS.filter((c) => c !== lang).map((c) => getDictionary(c).lang.ogLocale);
 
@@ -45,7 +55,7 @@ const fontPreloads = [
 
 {canonical && <link rel="canonical" href={canonical} />}
 {alternates.map((a) => <link rel="alternate" hreflang={a.code} href={a.href} />)}
-<link rel="alternate" hreflang="x-default" href={xDefault} />
+{xDefault && <link rel="alternate" hreflang="x-default" href={xDefault} />}
 
 <link rel="icon" href={withBase('favicon.svg')} type="image/svg+xml" />
 {
@@ -63,3 +73,6 @@ const fontPreloads = [
 {canonical && <meta property="og:url" content={canonical} />}
 {og && <meta property="og:image" content={abs(og.src)} />}
 <meta name="twitter:card" content={og ? 'summary_large_image' : 'summary'} />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+{og && <meta name="twitter:image" content={abs(og.src)} />}
