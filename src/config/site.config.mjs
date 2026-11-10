@@ -8,7 +8,7 @@
 export const siteConfig = {
   /**
    * Production URL, e.g. 'https://example.org'. LEFT EMPTY until the domain is confirmed.
-   * While empty: no canonical URLs, no sitemap, relative hreflang/OG URLs.
+   * While empty: no canonical, hreflang/x-default, og:url or og:image, no sitemap and no Sitemap line in robots.txt (all need absolute URLs).
    */
   siteUrl: '',
 

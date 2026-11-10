@@ -11,15 +11,17 @@ Read this first when continuing in a new session (see the continuation protocol 
 
 - **Stage 6a: Hebrew polish, accessibility, responsive/CSS fixes**: implemented 2026-11-03 (static edits only; **not build-verified**, see sections 4 and 5).
 - **Stage 6b: SEO fixes, `check-quality`, issues list**: implemented 2026-11-05 (**not build-verified**; see section 4 and `ISSUES.md`). Deliverable `daphi-website-stage6.zip`.
+- **Stage 7: README integration guide, outstanding-inputs checklist, Cloudflare notes, `FINAL-REPORT.md`**: completed 2026-11-09 (documentation only; **not build-verified**). Deliverable `daphi-website-stage7.zip`.
 
 ## 2. Next stage
+- **No further stage is planned.** Stage 7 was the last. What remains is verification and owner inputs: run `npm ci && npm run build && npm run check && npm run validate && npm run check:quality -- --require-dist` on a machine with network; fix only what breaks; then add `check:quality` to `build`. See `FINAL-REPORT.md`, `ISSUES.md` and the README checklist. The rest of this section is historical.
 - **Plan change (overrides Part B for the remaining work).** Because of a limited usage budget, the former Stage 6 is split into three shorter stages, each with its own zip:
 
   | Stage | Focus | Deliverable |
   | --- | --- | --- |
   | **6a (DONE)** | Hebrew polish, accessibility fixes, responsive/CSS fixes | `daphi-website-stage6a.zip` |
   | **6b (DONE)** | SEO fixes (`x-default`, sitemap config, Open Graph), a new `scripts/check-quality.mjs` for `dist/` with tests, issues list | `daphi-website-stage6.zip` |
-  | **7** | README with the integration guide, outstanding-inputs checklist, config files to reconcile, Cloudflare notes, final report (Part A, section 27) | `daphi-website-stage7.zip` |
+  | **7 (DONE)** | README with the integration guide, outstanding-inputs checklist, config files to reconcile, Cloudflare notes, final report (Part A, section 27) | `daphi-website-stage7.zip` |
 
 - **Stage 7 must do:** (1) FIRST run `npm ci && npm run build && npm run check && npm run validate` with network and fix what breaks (nothing since Stage 4 has compiled; the owner's error output was NOT supplied for 6b); especially verify the 6b items in `ISSUES.md` BLD-02/BLD-03 and run `npm run check:quality -- --require-dist` on the real `dist/`; once it is green, add it to `npm run build`. (2) Write the README integration guide, outstanding-inputs checklist, config files to reconcile (now including `src/pages/robots.txt.ts`, `src/config/site-url.mjs`, the sitemap `i18n` option), Cloudflare notes, final report (Part A, section 27). (3) Keep `ISSUES.md` current. Do not change copy or design.
 - **Stage 6b changes, for orientation:** `src/config/site-url.mjs` (`normalizeSiteUrl`: '' = unset, bare http(s) origin otherwise, throws on a typo); `SeoHead.astro` (siteUrl set: absolute canonical + hreflang en/he + `x-default` -> `/` + og:url + og:image only if a raster image exists; unset: **none** of those, because hreflang/OG URLs must be absolute and relative ones are invalid; always: title, description, og:type/site_name/title/description/locale/locale:alternate, twitter:card/title/description); `pages/index.astro` (entry page: same rules, `x-default` now `/` instead of `/en/`, OG tags added); `astro.config.mjs` (sitemap only when siteUrl is set, with `i18n` locales `en`/`he`); `public/robots.txt` **deleted** and replaced by the endpoint `src/pages/robots.txt.ts` (Sitemap line only when siteUrl is set); `scripts/check-quality.mjs` + `scripts/lib/quality-core.mjs` + `scripts/test-check-quality.mjs` (107 synthetic tests, `npm run check:quality` / `test:quality`, both in `validate`; NOT in `build` because it never ran on real output); `list-placeholders.mjs` reports the missing og image; `README.md` three small factual fixes. `x-default` = language entry page because Part A names no default language (decision recorded in `ISSUES.md` SEO-02). No JSON-LD (SEO-04). 404 already had `noindex`.
@@ -104,6 +106,13 @@ Read this first when continuing in a new session (see the continuation protocol 
 ## 4. Commands run
 | Command | Result |
 | --- | --- |
+| **Stage 7 session (Node 22.23.4, NO WORKING NETWORK)** | |
+| Owner's build-error paste | **not supplied again** (unfilled `[PASTE ...]` in the prompt), so no build fixes were made |
+| `npm ci` (once) | **FAILED** (npm crashed with network errors); partial `node_modules` removed. `astro build`, `astro check`, `validate`, `check:quality` on real `dist/`, the test-`siteUrl` build: **not run** |
+| `test:mailto`, `test:refs`, `test:links`, `test:stage5`, `test:quality` (107 synthetic), `check:contrast` | passed |
+| `list:placeholders` | runs (6 refs, 4 stat placeholders, 4 unset config values); script unchanged |
+| Edits | README rewritten (commands, Cloudflare, integration guide, config table, checklist), `FINAL-REPORT.md` added, `ISSUES.md` updated, comment fix in `site.config.mjs`. No code, copy or design change. `check:quality` NOT added to `build` (unverified) |
+|  |  |
 | **Stage 6b session (Node 22.23.4, NO WORKING NETWORK)** | |
 | Owner's build-error paste | **not supplied** (the prompt still contained the unfilled "[PASTE ...]" placeholder), so no build fixes were made |
 | **Owner's Cloudflare build log (after 6b)** | `npm ci` OK (282 packages), `astro build` OK (16 pages, `/robots.txt` emitted, so BLD-02 compile risk is resolved), `validate-refs` OK; **`check-routes` FAILED**: it still required hreflang on every page. Fixed after the log: it now requires hreflang/x-default only when `siteUrl` is set and rejects it when unset. `check-links` never ran (the build stopped); rerun is needed |
